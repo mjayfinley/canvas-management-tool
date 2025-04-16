@@ -13,3 +13,9 @@ In a seperate terminal, run the following command in the repo to start the mock 
 ```
 npm run db
 ```
+
+Then, open your browser and navigate to:
+
+```
+http://localhost:5173/
+```
