@@ -7,6 +7,7 @@ const MainLayout = () => {
 	return (
 		<Layout>
 			<Routes>
+				<Route path="/" element={<MapInterface />} />
 				<Route path="/map" element={<MapInterface />} />
 				<Route path="/dashboard" element={<Dashboard />} />
 			</Routes>

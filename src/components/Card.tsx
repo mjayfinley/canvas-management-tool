@@ -1,30 +1,30 @@
 import {
 	Card,
+	CardProps,
 	CardMedia,
 	CardContent,
 	CardActions,
 	Typography,
-	Button,
 	Box,
 } from "@mui/material";
+import { ReactElement } from "react";
 
-interface CustomCardProps {
+type CustomCardProps = {
 	title: string;
 	description: string;
 	imageUrl?: string;
-	onActionClick?: () => void;
-	actionLabel?: string;
-}
+	actionElement?: ReactElement;
+} & CardProps;
 
 const CustomCard = ({
 	title,
 	description,
 	imageUrl,
-	onActionClick,
-	actionLabel = "Learn More",
+	actionElement,
+	sx,
 }: CustomCardProps) => {
 	return (
-		<Card sx={{ maxWidth: 345, m: 2 }}>
+		<Card sx={{ ...sx, maxWidth: 375, mt: 2 }}>
 			{imageUrl && (
 				<CardMedia
 					component="img"
@@ -33,28 +33,25 @@ const CustomCard = ({
 					alt={title}
 				/>
 			)}
-			<CardContent>
-				<Typography gutterBottom variant="h6" component="div">
-					{title}
-				</Typography>
-				<Typography variant="body2" color="text.secondary">
-					{description}
-				</Typography>
-			</CardContent>
+			<Box sx={{ display: "flex" }}>
+				<CardContent>
+					<Typography gutterBottom variant="h6" component="div">
+						{title}
+					</Typography>
+					<Typography variant="body2" color="text.secondary">
+						{description}
+					</Typography>
+					<Typography variant="body2" color="text.secondary">
+						Region
+					</Typography>
+				</CardContent>
 
-			{onActionClick && (
-				<CardActions>
-					<Box ml="auto">
-						<Button
-							size="small"
-							color="primary"
-							onClick={onActionClick}
-						>
-							{actionLabel}
-						</Button>
-					</Box>
-				</CardActions>
-			)}
+				{actionElement && (
+					<CardActions sx={{ width: "100%" }}>
+						<Box ml="auto">{actionElement}</Box>
+					</CardActions>
+				)}
+			</Box>
 		</Card>
 	);
 };
