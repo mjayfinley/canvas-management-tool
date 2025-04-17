@@ -1,15 +1,16 @@
 import { Box } from "@mui/material";
 import Canvassers from "../Canvassers/Canvassers";
+import MapInterface from "./MapInterface";
 
-const MapInterface = () => {
+const MapContainer = () => {
 	return (
 		<Box sx={{ display: "flex", height: "90vh" }}>
 			<Canvassers />
 			<Box flex={1} ml={2}>
-				Map
+				<MapInterface />
 			</Box>
 		</Box>
 	);
 };
 
-export default MapInterface;
+export default MapContainer;

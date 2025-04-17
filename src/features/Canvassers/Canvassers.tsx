@@ -30,7 +30,7 @@ const Canvassers = () => {
 	const [adding, setAdding] = useState(false);
 
 	const theme = useTheme();
-	const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // mobile = sm and below
+	const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
 	const handleAddCanvasser = async () => {
 		setAdding(true);
@@ -52,7 +52,6 @@ const Canvassers = () => {
 				width: isMobile ? 360 : 300,
 				maxHeight: "100%",
 				overflowY: "auto",
-				pr: 2,
 				"&::-webkit-scrollbar": {
 					width: "0.4em",
 				},
@@ -159,7 +158,6 @@ const Canvassers = () => {
 				<Paper
 					sx={{
 						width: 300,
-						height: "100vh",
 						position: "relative",
 						flexShrink: 0,
 					}}

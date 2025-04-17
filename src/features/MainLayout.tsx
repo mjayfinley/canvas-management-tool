@@ -1,14 +1,14 @@
 import { Route, Routes } from "react-router";
 import Layout from "../components/Layout";
-import MapInterface from "./Map/Map";
+import MapContainer from "./Map/MapContainer";
 import Dashboard from "./Dashboard/Dashboard";
 
 const MainLayout = () => {
 	return (
 		<Layout>
 			<Routes>
-				<Route path="/" element={<MapInterface />} />
-				<Route path="/map" element={<MapInterface />} />
+				<Route path="/" element={<MapContainer />} />
+				<Route path="/map" element={<MapContainer />} />
 				<Route path="/dashboard" element={<Dashboard />} />
 			</Routes>
 		</Layout>
