@@ -5,7 +5,9 @@ const MapInterface = () => {
 	return (
 		<Box sx={{ display: "flex", height: "90vh" }}>
 			<Canvassers />
-			Map
+			<Box flex={1} ml={2}>
+				Map
+			</Box>
 		</Box>
 	);
 };
