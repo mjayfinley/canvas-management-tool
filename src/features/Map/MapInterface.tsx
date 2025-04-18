@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
-import { Box } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
+import { Box, Modal, Typography } from "@mui/material";
 import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { usePolygonContext } from "../../context/PolygonContext";
+import AssignCanvasserDropdown from "./AssignCanvasserDropdown";
 
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -11,8 +12,12 @@ const MapInterface = () => {
 	const mapRef = useRef<mapboxgl.Map | null>(null);
 	const mapContainerRef = useRef<HTMLDivElement | null>(null);
 	const drawRef = useRef<MapboxDraw | null>(null);
-	const { polygons, addPolygon, removePolygon, updatePolygon } =
-		usePolygonContext();
+	const { polygons } = usePolygonContext();
+
+	const [selectedPolygon, setSelectedPolygon] =
+		useState<mapboxgl.GeoJSONFeature | null>(null);
+
+	const [mapLoaded, setMapLoaded] = useState(false);
 
 	useEffect(() => {
 		mapboxgl.accessToken =
@@ -20,6 +25,7 @@ const MapInterface = () => {
 
 		const map = new mapboxgl.Map({
 			container: mapContainerRef.current!,
+			style: "mapbox://styles/mapbox/streets-v11",
 			center: [-95.63104, 30.02577],
 			zoom: 16,
 		});
@@ -38,48 +44,95 @@ const MapInterface = () => {
 		map.addControl(draw);
 
 		map.on("load", () => {
-			polygons.forEach((polygon) => {
-				draw.add(polygon);
+			setMapLoaded(true);
+
+			map.addSource("polygons", {
+				type: "geojson",
+				data: {
+					type: "FeatureCollection",
+					features: [],
+				},
 			});
 
-			map.on("draw.create", (e: any) => {
-				const created = e.features[0];
-				if (!created.id) {
-					created.id = crypto.randomUUID();
-				}
-				addPolygon(created);
+			map.addLayer({
+				id: "polygon-fill",
+				type: "fill",
+				source: "polygons",
+				paint: {
+					"fill-color": "blue",
+					"fill-opacity": 0.5,
+				},
 			});
 
-			map.on("draw.update", (e: any) => {
-				const updated = e.features[0];
-				updatePolygon(updated);
-			});
-
-			map.on("draw.delete", (e: any) => {
-				const deleted = e.features[0];
-				if (deleted.id) {
-					removePolygon(deleted.id.toString());
-				}
+			map.addLayer({
+				id: "polygon-outline",
+				type: "line",
+				source: "polygons",
+				paint: {
+					"line-color": "#000",
+					"line-width": 2,
+				},
 			});
 		});
 
-		return () => map.remove();
+		return () => {
+			map.remove();
+		};
 	}, []);
 
 	useEffect(() => {
-		if (!drawRef.current) return;
+		if (!mapLoaded || !mapRef.current) return;
 
-		const existing = new Set(
-			drawRef.current.getAll().features.map((f) => f.id?.toString())
-		);
+		const source = mapRef.current.getSource(
+			"polygons"
+		) as mapboxgl.GeoJSONSource;
+		if (source && polygons) {
+			source.setData({
+				type: "FeatureCollection",
+				features: polygons,
+			});
+		}
+	}, [polygons, mapLoaded]);
 
-		polygons.forEach((polygon) => {
-			if (!polygon.id || existing.has(polygon.id.toString())) return;
-			drawRef.current?.add(polygon);
-		});
-	}, [polygons]);
-
-	return <Box sx={{ height: "90vh", width: "100%" }} ref={mapContainerRef} />;
+	return (
+		<>
+			<Box sx={{ height: "90vh", width: "100%" }} ref={mapContainerRef} />
+			<Modal
+				open={!!selectedPolygon}
+				onClose={() => setSelectedPolygon(null)}
+				aria-labelledby="polygon-info"
+			>
+				<Box
+					sx={{
+						position: "absolute",
+						top: "50%",
+						left: "50%",
+						transform: "translate(-50%, -50%)",
+						bgcolor: "background.paper",
+						boxShadow: 24,
+						p: 4,
+						width: 400,
+						borderRadius: 2,
+					}}
+				>
+					{selectedPolygon && (
+						<>
+							<Typography
+								variant="h6"
+								id="polygon-info"
+								gutterBottom
+							>
+								Polygon Info
+							</Typography>
+							<AssignCanvasserDropdown
+								polygonId={selectedPolygon.id?.toString() || ""}
+							/>
+						</>
+					)}
+				</Box>
+			</Modal>
+		</>
+	);
 };
 
 export default MapInterface;

@@ -5,6 +5,7 @@ import { ThemeProvider } from "./context/ThemeContext.tsx";
 import { CanvassersProvider } from "./context/CanvassersContext.tsx";
 import App from "./app.tsx";
 import { PolygonProvider } from "./context/PolygonContext.tsx";
+import { AssignmentProvider } from "./context/AssignmentContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
 	<AuthProvider>
@@ -12,7 +13,9 @@ createRoot(document.getElementById("root")!).render(
 			<ThemeProvider>
 				<CanvassersProvider>
 					<PolygonProvider>
-						<App />
+						<AssignmentProvider>
+							<App />
+						</AssignmentProvider>
 					</PolygonProvider>
 				</CanvassersProvider>
 			</ThemeProvider>

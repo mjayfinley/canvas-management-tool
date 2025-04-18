@@ -23,8 +23,10 @@ export const usePolygonContext = () => {
 	return context;
 };
 
-export const PolygonProvider: React.FC<{ children: React.ReactNode }> = ({
+export const PolygonProvider = ({
 	children,
+}: {
+	children: React.ReactNode;
 }) => {
 	const [polygons, setPolygons] = useState<PolygonFeature[]>([]);
 
