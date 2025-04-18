@@ -15,6 +15,7 @@ type CustomCardProps = {
 	content: string;
 	imageUrl?: string;
 	actionElement?: ReactElement;
+	onClick?: () => void;
 } & CardProps;
 
 const CustomCard = ({
@@ -23,10 +24,11 @@ const CustomCard = ({
 	content,
 	imageUrl,
 	actionElement,
+	onClick,
 	sx,
 }: CustomCardProps) => {
 	return (
-		<Card sx={{ ...sx, maxWidth: 375, mt: 2 }}>
+		<Card sx={{ ...sx, maxWidth: 375, mt: 2 }} onClick={onClick}>
 			{imageUrl && (
 				<CardMedia
 					component="img"

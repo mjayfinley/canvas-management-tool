@@ -1,12 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { getAssignments, removeUserFromPolygon } from "../hooks/useAssignments";
-
-export interface Canvasser {
-	id: string;
-	name: string;
-	email: string;
-}
+import { Canvasser } from "../utils/types";
+import { useCanvasserStatsContext } from "./CanvasserStatsContext";
 
 interface CanvassersContextType {
 	canvassers: Canvasser[];
@@ -27,6 +23,7 @@ export const CanvassersProvider = ({
 }: {
 	children: React.ReactNode;
 }) => {
+	const { addStat, removeStat } = useCanvasserStatsContext();
 	const [canvassers, setCanvassers] = useState<Canvasser[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
 
@@ -50,6 +47,7 @@ export const CanvassersProvider = ({
 				email: canvasser.email,
 			});
 			setCanvassers((prev) => [...prev, response.data]);
+			addStat(canvasser.id);
 		} catch (err) {
 			console.error("Failed to add user:", err);
 		}
@@ -66,7 +64,7 @@ export const CanvassersProvider = ({
 			await canvaserAssignments.forEach((assignment) => {
 				removeUserFromPolygon(assignment.id);
 			});
-
+			removeStat(id);
 			setCanvassers((prev) => prev.filter((u) => u.id !== id));
 		} catch (err) {
 			console.error("Failed to remove user:", err);

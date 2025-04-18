@@ -117,7 +117,7 @@ const Canvassers = () => {
 					sx={{
 						position: "absolute",
 						alignSelf: "flex-start",
-						top: "80px",
+						bottom: "25px",
 						left: "25px",
 						color: "black",
 						zIndex: 1000,

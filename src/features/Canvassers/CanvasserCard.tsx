@@ -1,9 +1,11 @@
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Canvasser } from "../../context/CanvassersContext";
 import CustomCard from "../../components/Card";
-import { IconButton, Typography } from "@mui/material";
+import { IconButton } from "@mui/material";
 import { useAssignmentContext } from "../../context/AssignmentContext";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { Canvasser } from "../../utils/types";
+import { useCanvasserContext } from "../../context/CanvasserContext";
 
 interface CanvasserCardProps {
 	canvasser: Canvasser;
@@ -12,6 +14,8 @@ interface CanvasserCardProps {
 
 const CanvasserCard = ({ canvasser, onDelete }: CanvasserCardProps) => {
 	const { assignments } = useAssignmentContext();
+	const { setSelectedCanvasser } = useCanvasserContext();
+	const navigate = useNavigate();
 	const [numberOfAssignments, setNumberOfAssignments] = useState(0);
 
 	useEffect(() => {
@@ -21,17 +25,25 @@ const CanvasserCard = ({ canvasser, onDelete }: CanvasserCardProps) => {
 		setNumberOfAssignments(assignedRegions.length);
 	}, [assignments]);
 
-	console.log(numberOfAssignments);
+	const handleSelectCanvasser = () => {
+		setSelectedCanvasser(canvasser);
+		navigate("/dashboard");
+	};
 
 	return (
 		<CustomCard
 			title={canvasser.name}
 			description={canvasser.email}
 			content={`Regions: ${numberOfAssignments}`}
+			onClick={handleSelectCanvasser}
+			sx={{ "&:hover": { cursor: "pointer" } }}
 			actionElement={
 				<IconButton
 					color="error"
-					onClick={() => onDelete(canvasser.id)}
+					onClick={(e) => {
+						e.stopPropagation();
+						onDelete(canvasser.id);
+					}}
 				>
 					<DeleteIcon />
 				</IconButton>

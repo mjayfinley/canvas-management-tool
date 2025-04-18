@@ -6,18 +6,24 @@ import { CanvassersProvider } from "./context/CanvassersContext.tsx";
 import App from "./app.tsx";
 import { PolygonProvider } from "./context/PolygonContext.tsx";
 import { AssignmentProvider } from "./context/AssignmentContext.tsx";
+import { CanvasserProvider } from "./context/CanvasserContext.tsx";
+import { CanvasserStatsProvider } from "./context/CanvasserStatsContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
 	<AuthProvider>
 		<ToastProvider>
 			<ThemeProvider>
-				<CanvassersProvider>
-					<PolygonProvider>
-						<AssignmentProvider>
-							<App />
-						</AssignmentProvider>
-					</PolygonProvider>
-				</CanvassersProvider>
+				<CanvasserStatsProvider>
+					<CanvassersProvider>
+						<PolygonProvider>
+							<AssignmentProvider>
+								<CanvasserProvider>
+									<App />
+								</CanvasserProvider>
+							</AssignmentProvider>
+						</PolygonProvider>
+					</CanvassersProvider>
+				</CanvasserStatsProvider>
 			</ThemeProvider>
 		</ToastProvider>
 	</AuthProvider>

@@ -9,6 +9,8 @@ import {
 	Divider,
 	ListItemButton,
 	AppBar,
+	Button,
+	useMediaQuery,
 } from "@mui/material";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
@@ -30,64 +32,46 @@ const Layout = ({ children }: LayoutProps) => {
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const { logoutUser } = useAuth();
+	const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-	const handleDrawerToggle = () => {
-		setOpen((prev) => !prev);
-	};
-
+	const handleDrawerToggle = () => setOpen((prev) => !prev);
 	const handleNavClick = (path: string) => {
 		setOpen(false);
 		navigate(path);
 	};
 
 	const handleLogout = () => {
-		theme.palette.mode === "dark" && toggleTheme();
+		if (theme.palette.mode === "dark") toggleTheme();
 		logoutUser();
 	};
 
-	const drawerListItems = [
-		{
-			label: "Map",
-			path: "/map",
-		},
-
-		{
-			label: "Dashboard",
-			path: "/dashboard",
-		},
+	const navItems = [
+		{ label: "Map", path: "/map" },
+		{ label: "Dashboard", path: "/dashboard" },
 	];
 
 	const drawerContent = (
 		<Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-			<Box>
-				<Toolbar>
-					<Typography variant="h6" noWrap>
-						Canvasy
-					</Typography>
-				</Toolbar>
-				<Divider />
-				<List>
-					<>
-						{drawerListItems.map((item) => (
-							<ListItemButton
-								key={item.label}
-								selected={
-									window.location.pathname === item.path
-								}
-								onClick={() => handleNavClick(item.path)}
-							>
-								{item.label}
-							</ListItemButton>
-						))}
-						<ListItemButton
-							key="logout"
-							onClick={() => handleLogout()}
-						>
-							Logout
-						</ListItemButton>
-					</>
-				</List>
-			</Box>
+			<Toolbar>
+				<Typography variant="h6" noWrap>
+					Canvasy
+				</Typography>
+			</Toolbar>
+			<Divider />
+			<List>
+				{navItems.map((item) => (
+					<ListItemButton
+						key={item.label}
+						selected={window.location.pathname === item.path}
+						onClick={() => handleNavClick(item.path)}
+					>
+						{item.label}
+					</ListItemButton>
+				))}
+				<ListItemButton key="logout" onClick={handleLogout}>
+					Logout
+				</ListItemButton>
+			</List>
 
 			<IconButton
 				color="inherit"
@@ -97,12 +81,12 @@ const Layout = ({ children }: LayoutProps) => {
 			>
 				{theme.palette.mode === "dark" ? (
 					<>
-						<Brightness7Icon sx={{ mr: "4px" }} />
+						<Brightness7Icon sx={{ mr: 1 }} />
 						Light
 					</>
 				) : (
 					<>
-						<Brightness4Icon sx={{ mr: "4px" }} />
+						<Brightness4Icon sx={{ mr: 1 }} />
 						Dark
 					</>
 				)}
@@ -113,33 +97,87 @@ const Layout = ({ children }: LayoutProps) => {
 	return (
 		<Box sx={{ display: "flex" }}>
 			<AppBar position="fixed">
-				<Toolbar>
-					<IconButton
-						color="inherit"
-						edge="start"
-						onClick={handleDrawerToggle}
-						sx={{ mr: 2 }}
-					>
-						<Menu />
-					</IconButton>
+				<Toolbar sx={{ justifyContent: "space-between" }}>
+					<Box sx={{ display: "flex", alignItems: "center" }}>
+						{isMobile && (
+							<IconButton
+								color="inherit"
+								edge="start"
+								onClick={handleDrawerToggle}
+								sx={{ mr: 2 }}
+							>
+								<Menu />
+							</IconButton>
+						)}
+						<Typography variant="h6" noWrap>
+							Canvasy
+						</Typography>
+					</Box>
 
-					<Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
-						Canvasy
-					</Typography>
+					{/* Desktop Nav */}
+					{!isMobile && (
+						<Box
+							sx={{
+								display: "flex",
+								alignItems: "center",
+								gap: 2,
+							}}
+						>
+							{navItems.map((item) => (
+								<Button
+									key={item.label}
+									color="inherit"
+									variant="text"
+									onClick={() => handleNavClick(item.path)}
+									sx={{
+										textTransform: "none",
+										fontWeight:
+											window.location.pathname ===
+											item.path
+												? "bold"
+												: "normal",
+										textDecoration:
+											window.location.pathname ===
+											item.path
+												? "underline"
+												: "none",
+									}}
+								>
+									{item.label}
+								</Button>
+							))}
+							<Button
+								color="inherit"
+								sx={{ textTransform: "none" }}
+								onClick={handleLogout}
+							>
+								Logout
+							</Button>
+							<IconButton color="inherit" onClick={toggleTheme}>
+								{theme.palette.mode === "dark" ? (
+									<Brightness7Icon />
+								) : (
+									<Brightness4Icon />
+								)}
+							</IconButton>
+						</Box>
+					)}
 				</Toolbar>
 			</AppBar>
+
+			{/* Mobile Drawer */}
 			<Drawer
 				variant="temporary"
 				open={open}
 				onClose={handleDrawerToggle}
 				sx={{
-					"& .MuiDrawer-paper": {
-						width: drawerWidth,
-					},
+					display: { xs: "block", md: "none" },
+					"& .MuiDrawer-paper": { width: drawerWidth },
 				}}
 			>
 				{drawerContent}
 			</Drawer>
+
 			<Box
 				component="main"
 				sx={{

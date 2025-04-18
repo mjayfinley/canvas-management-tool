@@ -1,5 +1,9 @@
+import { useCanvasserContext } from "../../context/CanvasserContext";
+
 const Dashboard = () => {
-	return <div>Dashboard</div>;
+	const { selectedCanvasser } = useCanvasserContext();
+
+	return <div>{selectedCanvasser?.name}</div>;
 };
 
 export default Dashboard;
