@@ -12,6 +12,7 @@ import { ReactElement } from "react";
 type CustomCardProps = {
 	title: string;
 	description: string;
+	content: string;
 	imageUrl?: string;
 	actionElement?: ReactElement;
 } & CardProps;
@@ -19,6 +20,7 @@ type CustomCardProps = {
 const CustomCard = ({
 	title,
 	description,
+	content,
 	imageUrl,
 	actionElement,
 	sx,
@@ -42,7 +44,7 @@ const CustomCard = ({
 						{description}
 					</Typography>
 					<Typography variant="body2" color="text.secondary">
-						Region
+						{content}
 					</Typography>
 				</CardContent>
 

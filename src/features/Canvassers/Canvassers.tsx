@@ -8,16 +8,11 @@ import {
 	useTheme,
 	useMediaQuery,
 	Paper,
-	Button,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogTitle,
 } from "@mui/material";
 import CustomInput from "../../components/Input";
 import { useCanvassers } from "../../context/CanvassersContext";
 import CanvasserCard from "./CanvasserCard";
-import CustomButton from "../../components/Button";
+
 import { Add, Close, PeopleAlt } from "@mui/icons-material";
 import CustomModal from "../../components/Modal";
 
@@ -176,40 +171,6 @@ const Canvassers = () => {
 				onConfirm={handleAddCanvasser}
 				confirmText="Add"
 			/>
-			{/* <Dialog
-				open={modalOpen}
-				onClose={() => setModalOpen(false)}
-				fullWidth
-			>
-				<DialogTitle>Add New Canvasser</DialogTitle>
-				<DialogContent
-					sx={{
-						display: "flex",
-						flexDirection: "column",
-						gap: 2,
-						mt: 1,
-					}}
-				>
-					<CustomInput
-						label="Name"
-						value={newName}
-						onChange={(e) => setName(e.target.value)}
-					/>
-					<CustomInput
-						label="Email"
-						value={newEmail}
-						onChange={(e) => setEmail(e.target.value)}
-					/>
-				</DialogContent>
-				<DialogActions>
-					<Button onClick={() => setModalOpen(false)}>Cancel</Button>
-					<CustomButton
-						label="Add"
-						onClick={handleAddCanvasser}
-						loading={adding}
-					/>
-				</DialogActions>
-			</Dialog> */}
 		</>
 	);
 };
