@@ -126,6 +126,7 @@ const MapInterface = () => {
 			});
 
 			map.on("click", "polygon-fill", (e) => {
+				if (isEditingRef.current) return;
 				const feature = e.features?.[0];
 				if (!feature?.id || !drawRef.current || !mapRef.current) return;
 
@@ -147,6 +148,52 @@ const MapInterface = () => {
 			});
 
 			map.on("click", (e) => {
+				if (
+					!mapRef.current ||
+					!isEditingRef.current ||
+					!selectedPolygonIdRef.current
+				)
+					return;
+
+				const features = mapRef.current.queryRenderedFeatures(e.point, {
+					layers: ["polygon-fill"],
+				});
+
+				if (features.length === 0) {
+					if (drawRef.current) {
+						drawRef.current.deleteAll();
+						restoreDrawControls(false);
+						setIsEditing(false);
+						setSelectedPolygonId(null);
+						setAnchorEl(null);
+						setPopoverPosition(null);
+					}
+				}
+			});
+
+			map.on("touchstart", "polygon-fill", (e) => {
+				if (isEditingRef.current) return;
+				const feature = e.features?.[0];
+				if (!feature?.id || !drawRef.current || !mapRef.current) return;
+
+				const id = feature.id.toString();
+				setSelectedPolygonId(id);
+
+				const coordinates = e.lngLat as mapboxgl.LngLatLike;
+				const canvas = mapRef.current.getCanvas();
+				const rect = canvas.getBoundingClientRect();
+
+				const point = mapRef.current.project(coordinates);
+				if (point) {
+					setPopoverPosition([
+						point.x + rect.left,
+						point.y + rect.top,
+					]);
+					setAnchorEl(canvas);
+				}
+			});
+
+			map.on("touchstart", (e) => {
 				if (
 					!mapRef.current ||
 					!isEditingRef.current ||

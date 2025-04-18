@@ -8,12 +8,18 @@ import {
 	useTheme,
 	useMediaQuery,
 	Paper,
+	Button,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
 } from "@mui/material";
 import CustomInput from "../../components/Input";
 import { useCanvassers } from "../../context/CanvassersContext";
 import CanvasserCard from "./CanvasserCard";
 import CustomButton from "../../components/Button";
-import { Close, PeopleAlt } from "@mui/icons-material";
+import { Add, Close, PeopleAlt } from "@mui/icons-material";
+import CustomModal from "../../components/Modal";
 
 interface Canvassers {
 	id: string;
@@ -27,13 +33,12 @@ const Canvassers = () => {
 	const [open, setOpen] = useState(false);
 	const [newName, setName] = useState("");
 	const [newEmail, setEmail] = useState("");
-	const [adding, setAdding] = useState(false);
+	const [modalOpen, setModalOpen] = useState(false);
 
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
 	const handleAddCanvasser = async () => {
-		setAdding(true);
 		const newCanvasser = {
 			id: Date.now().toString(),
 			name: newName,
@@ -42,7 +47,8 @@ const Canvassers = () => {
 		await addCanvasser(newCanvasser);
 		setName("");
 		setEmail("");
-		setAdding(false);
+
+		setModalOpen(false);
 	};
 
 	const renderPanelContent = (
@@ -69,43 +75,19 @@ const Canvassers = () => {
 				display="flex"
 				alignItems="center"
 				justifyContent="space-between"
-				mb={2}
+				mb={1}
 			>
-				<Typography variant="h6" gutterBottom>
-					Canvassers
-				</Typography>
+				<Typography variant="h6">Canvassers</Typography>
+
+				<IconButton color="success" onClick={() => setModalOpen(true)}>
+					<Add />
+				</IconButton>
+
 				{isMobile && (
 					<IconButton onClick={() => setOpen(false)}>
 						<Close />
 					</IconButton>
 				)}
-			</Box>
-
-			<Box
-				display="flex"
-				flexDirection="column"
-				gap={1}
-				mb={2}
-				sx={{ alignItems: "center" }}
-			>
-				<CustomInput
-					label="Name"
-					value={newName}
-					onChange={(e) => setName(e.target.value)}
-					fullWidth
-				/>
-				<CustomInput
-					label="Email"
-					value={newEmail}
-					onChange={(e) => setEmail(e.target.value)}
-					fullWidth
-				/>
-
-				<CustomButton
-					label="Add"
-					onClick={handleAddCanvasser}
-					loading={adding}
-				/>
 			</Box>
 
 			{loading ? (
@@ -140,6 +122,14 @@ const Canvassers = () => {
 					sx={{
 						position: "absolute",
 						alignSelf: "flex-start",
+						top: "80px",
+						left: "25px",
+						color: "black",
+						zIndex: 1000,
+						border: "1px solid rgba(0, 0, 0, 0.2)", // faint outline
+						boxShadow: "0 1px 4px rgba(0, 0, 0, 0.1)", // subtle shadow
+						borderRadius: 1, // square shape (0 = sharp, 1 = slight rounding)
+						backgroundColor: "#fff", // optional: helps shadow show up better
 					}}
 				>
 					<PeopleAlt />
@@ -165,6 +155,61 @@ const Canvassers = () => {
 					{renderPanelContent}
 				</Paper>
 			)}
+			<CustomModal
+				open={modalOpen}
+				onClose={() => setModalOpen(false)}
+				title="Add New Canvasser"
+				content={
+					<>
+						<CustomInput
+							label="Name"
+							value={newName}
+							onChange={(e) => setName(e.target.value)}
+						/>
+						<CustomInput
+							label="Email"
+							value={newEmail}
+							onChange={(e) => setEmail(e.target.value)}
+						/>
+					</>
+				}
+				onConfirm={handleAddCanvasser}
+				confirmText="Add"
+			/>
+			{/* <Dialog
+				open={modalOpen}
+				onClose={() => setModalOpen(false)}
+				fullWidth
+			>
+				<DialogTitle>Add New Canvasser</DialogTitle>
+				<DialogContent
+					sx={{
+						display: "flex",
+						flexDirection: "column",
+						gap: 2,
+						mt: 1,
+					}}
+				>
+					<CustomInput
+						label="Name"
+						value={newName}
+						onChange={(e) => setName(e.target.value)}
+					/>
+					<CustomInput
+						label="Email"
+						value={newEmail}
+						onChange={(e) => setEmail(e.target.value)}
+					/>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setModalOpen(false)}>Cancel</Button>
+					<CustomButton
+						label="Add"
+						onClick={handleAddCanvasser}
+						loading={adding}
+					/>
+				</DialogActions>
+			</Dialog> */}
 		</>
 	);
 };

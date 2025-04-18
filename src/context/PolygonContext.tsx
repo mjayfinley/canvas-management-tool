@@ -6,6 +6,7 @@ import {
 	updatePolygon as updatePolygonApi,
 } from "../hooks/usePolygons";
 import { Feature } from "geojson";
+import { getAssignments, removeUserFromPolygon } from "../hooks/useAssignments";
 
 interface PolygonContextType {
 	polygons: Feature[];
@@ -52,7 +53,13 @@ export const PolygonProvider = ({
 	};
 
 	const removePolygon = async (id: string) => {
+		const assignmentData = await getAssignments();
 		await deletePolygon(id);
+
+		const polygonAssignment = assignmentData.find(
+			(a) => a.polygonId === id
+		);
+		polygonAssignment && removeUserFromPolygon(polygonAssignment.id);
 		setPolygons((prev) => prev.filter((poly) => poly.id !== id));
 	};
 
