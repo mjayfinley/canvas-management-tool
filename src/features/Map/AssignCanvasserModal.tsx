@@ -43,6 +43,7 @@ const AssignCanvasserModal = ({ open, onClose, polygonId }: Props) => {
 			title="Assign Canvassers"
 			content={
 				<Autocomplete
+					sx={{ height: "60px" }}
 					multiple
 					options={canvassers}
 					getOptionLabel={(option) => option.name}
@@ -60,11 +61,7 @@ const AssignCanvasserModal = ({ open, onClose, polygonId }: Props) => {
 						))
 					}
 					renderInput={(params) => (
-						<TextField
-							{...params}
-							label="Select Canvassers"
-							placeholder="Canvassers"
-						/>
+						<TextField {...params} placeholder="Canvassers" />
 					)}
 				/>
 			}

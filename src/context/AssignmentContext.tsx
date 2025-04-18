@@ -6,6 +6,7 @@ import {
 	removeUserFromPolygon,
 } from "../hooks/useAssignments";
 import { Canvasser, useCanvassers } from "../context/CanvassersContext";
+import { generateRandomNumber } from "../utils/randomIdGenerator";
 
 interface AssignmentContextType {
 	assignments: PolygonUserAssignment[];
@@ -36,7 +37,7 @@ export const AssignmentProvider = ({
 	}, []);
 
 	const assignUser = async (polygonId: string, userId: string) => {
-		const newAssignment = { polygonId, userId };
+		const newAssignment = { polygonId, userId, id: generateRandomNumber() };
 		await assignUserToPolygon(newAssignment);
 		setAssignments((prev) => [...prev, newAssignment]);
 	};
@@ -46,7 +47,9 @@ export const AssignmentProvider = ({
 			(a) => a.polygonId === polygonId && a.userId === userId
 		);
 		if (!found) return;
-		await removeUserFromPolygon(found.polygonId + "_" + found.userId); // Or however you set `id`
+
+		console.log(found);
+		await removeUserFromPolygon(found.id);
 		setAssignments((prev) =>
 			prev.filter(
 				(a) => !(a.polygonId === polygonId && a.userId === userId)

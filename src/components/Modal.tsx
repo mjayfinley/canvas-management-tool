@@ -31,7 +31,7 @@ const CustomModal = ({
 		<Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
 			{title && <DialogTitle>{title}</DialogTitle>}
 
-			<DialogContent>{content}</DialogContent>
+			<DialogContent sx={{ mt: "20px" }}>{content}</DialogContent>
 
 			<DialogActions>
 				<Button onClick={onClose} color="secondary">

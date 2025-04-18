@@ -6,4 +6,5 @@ export interface User {
 export interface PolygonUserAssignment {
 	polygonId: string;
 	userId: string;
+	id: string;
 }
