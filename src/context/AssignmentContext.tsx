@@ -6,7 +6,7 @@ import {
 	removeUserFromPolygon,
 } from "../hooks/useAssignments";
 import { Canvasser, useCanvassers } from "../context/CanvassersContext";
-import { generateRandomNumber } from "../utils/randomIdGenerator";
+import { generateRandomNumber } from "../utils/helperFunctions";
 
 interface AssignmentContextType {
 	assignments: PolygonUserAssignment[];
