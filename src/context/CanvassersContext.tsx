@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { getAssignments, removeUserFromPolygon } from "../hooks/useAssignments";
 
 export interface Canvasser {
 	id: string;
@@ -56,7 +57,16 @@ export const CanvassersProvider = ({
 
 	const removeCanvasser = async (id: string) => {
 		try {
+			const assignmentData = await getAssignments();
 			await axios.delete(`${API_URL}/${id}`);
+			const canvaserAssignments = assignmentData.filter(
+				(a) => a.userId === id
+			);
+
+			await canvaserAssignments.forEach((assignment) => {
+				removeUserFromPolygon(assignment.id);
+			});
+
 			setCanvassers((prev) => prev.filter((u) => u.id !== id));
 		} catch (err) {
 			console.error("Failed to remove user:", err);

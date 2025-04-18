@@ -34,7 +34,7 @@ export const AssignmentProvider = ({
 			setAssignments(data);
 		};
 		fetchData();
-	}, []);
+	}, [canvassers]);
 
 	const assignUser = async (polygonId: string, userId: string) => {
 		const newAssignment = { polygonId, userId, id: generateRandomNumber() };
@@ -48,7 +48,6 @@ export const AssignmentProvider = ({
 		);
 		if (!found) return;
 
-		console.log(found);
 		await removeUserFromPolygon(found.id);
 		setAssignments((prev) =>
 			prev.filter(

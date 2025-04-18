@@ -40,6 +40,11 @@ const Layout = ({ children }: LayoutProps) => {
 		navigate(path);
 	};
 
+	const handleLogout = () => {
+		theme.palette.mode === "dark" && toggleTheme();
+		logoutUser();
+	};
+
 	const drawerListItems = [
 		{
 			label: "Map",
@@ -76,7 +81,7 @@ const Layout = ({ children }: LayoutProps) => {
 						))}
 						<ListItemButton
 							key="logout"
-							onClick={() => logoutUser()}
+							onClick={() => handleLogout()}
 						>
 							Logout
 						</ListItemButton>

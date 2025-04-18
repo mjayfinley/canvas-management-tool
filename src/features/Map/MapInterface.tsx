@@ -6,7 +6,7 @@ import { usePolygonContext } from "../../context/PolygonContext";
 
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { Feature, Point } from "geojson";
+import { Feature } from "geojson";
 import { generateRandomNumber } from "../../utils/randomIdGenerator";
 import AssignCanvasserModal from "./AssignCanvasserModal";
 import { useAssignmentContext } from "../../context/AssignmentContext";
@@ -15,6 +15,8 @@ const MapInterface = () => {
 	const mapRef = useRef<mapboxgl.Map | null>(null);
 	const mapContainerRef = useRef<HTMLDivElement | null>(null);
 	const drawRef = useRef<MapboxDraw | null>(null);
+	const markerRefs = useRef<mapboxgl.Marker[]>([]);
+
 	const { polygons, addPolygon, updatePolygon, removePolygon } =
 		usePolygonContext();
 	const { getUsersForPolygon, getUsersForPolygonFull } =
@@ -81,28 +83,28 @@ const MapInterface = () => {
 				},
 			});
 
-			map.addSource("canvasser-labels", {
-				type: "geojson",
-				data: {
-					type: "FeatureCollection",
-					features: [],
-				},
-			});
+			// map.addSource("canvasser-labels", {
+			// 	type: "geojson",
+			// 	data: {
+			// 		type: "FeatureCollection",
+			// 		features: [],
+			// 	},
+			// });
 
-			map.addLayer({
-				id: "canvasser-labels",
-				type: "symbol",
-				source: "canvasser-labels",
-				layout: {
-					"text-field": ["get", "label"],
-					"text-size": 14,
-					"text-offset": [0, 0.6],
-					"text-anchor": "top",
-				},
-				paint: {
-					"text-color": "#000000",
-				},
-			});
+			// map.addLayer({
+			// 	id: "canvasser-labels",
+			// 	type: "symbol",
+			// 	source: "canvasser-labels",
+			// 	layout: {
+			// 		"text-field": ["get", "label"],
+			// 		"text-size": 14,
+			// 		"text-offset": [0, 0.6],
+			// 		"text-anchor": "top",
+			// 	},
+			// 	paint: {
+			// 		"text-color": "#000000",
+			// 	},
+			// });
 
 			map.on("draw.create", (e: any) => {
 				const feature: Feature = e.features[0];
@@ -154,9 +156,9 @@ const MapInterface = () => {
 			"polygons"
 		) as mapboxgl.GeoJSONSource;
 
-		const labelSource = mapRef.current.getSource(
-			"canvasser-labels"
-		) as mapboxgl.GeoJSONSource;
+		// const labelSource = mapRef.current.getSource(
+		// 	"canvasser-labels"
+		// ) as mapboxgl.GeoJSONSource;
 
 		if (source && polygons) {
 			const featuresWithId = polygons.map((feature) => {
@@ -179,43 +181,93 @@ const MapInterface = () => {
 				features: featuresWithId,
 			});
 
-			// Labels
-			const labelFeatures: Feature<Point>[] = featuresWithId.flatMap(
-				(feature) => {
-					const id = feature.id?.toString() ?? generateRandomNumber();
-					const assigned = getUsersForPolygonFull(id);
-					const coords = (feature.geometry as any).coordinates?.[0];
-					if (!coords || coords.length < 3) return [];
+			markerRefs.current.forEach((marker) => marker.remove());
+			markerRefs.current = [];
 
-					// Simple centroid
-					const centroid = coords.reduce(
-						(acc: [number, number], coord: [number, number]) => [
-							acc[0] + coord[0] / coords.length,
-							acc[1] + coord[1] / coords.length,
-						],
-						[0, 0]
-					);
+			featuresWithId.forEach((feature) => {
+				const id = feature.id?.toString() ?? generateRandomNumber();
+				const assigned = getUsersForPolygonFull(id);
+				const coords = (feature.geometry as any).coordinates?.[0];
+				if (!coords || coords.length < 3) return;
 
-					return assigned.map((user, i) => ({
-						type: "Feature",
-						geometry: {
-							type: "Point",
-							coordinates: [
-								centroid[0] + i * 0.0001,
-								centroid[1],
-							],
-						},
-						properties: {
-							label: user.name.charAt(0).toUpperCase(),
-						},
-					}));
-				}
-			);
+				// Simple centroid calculation
+				const centroid = coords.reduce(
+					(acc: [number, number], coord: [number, number]) => [
+						acc[0] + coord[0] / coords.length,
+						acc[1] + coord[1] / coords.length,
+					],
+					[0, 0]
+				);
 
-			labelSource?.setData({
-				type: "FeatureCollection",
-				features: labelFeatures,
+				// Create marker for each assigned canvasser
+				assigned.forEach((user, i, arr) => {
+					const angle = (2 * Math.PI * i) / arr.length; // Even spacing
+					const radius = 0.00015; // ~15m offset
+					const offsetLng = centroid[0] + radius * Math.cos(angle);
+					const offsetLat = centroid[1] + radius * Math.sin(angle);
+
+					const el = document.createElement("div");
+					el.style.background = "#007bff";
+					el.style.color = "#fff";
+					el.style.borderRadius = "50%";
+					el.style.width = "30px";
+					el.style.height = "30px";
+					el.style.display = "flex";
+					el.style.justifyContent = "center";
+					el.style.alignItems = "center";
+					el.style.fontWeight = "bold";
+					el.style.fontSize = "14px";
+					el.style.boxShadow = "0 0 4px rgba(0,0,0,0.3)";
+					el.innerText = user.name.charAt(0).toUpperCase();
+
+					const marker = new mapboxgl.Marker({ element: el })
+						.setLngLat([offsetLng, offsetLat])
+						.addTo(mapRef.current!);
+
+					markerRefs.current.push(marker);
+				});
 			});
+
+			// Labels
+			// const labelFeatures: Feature<Point>[] = featuresWithId.flatMap(
+			// 	(feature) => {
+			// 		const id = feature.id?.toString() ?? generateRandomNumber();
+			// 		const assigned = getUsersForPolygonFull(id);
+			// 		console.log(assigned);
+			// 		const coords = (feature.geometry as any).coordinates?.[0];
+			// 		if (!coords || coords.length < 3) return [];
+
+			// 		// Simple centroid
+			// 		const centroid = coords.reduce(
+			// 			(acc: [number, number], coord: [number, number]) => [
+			// 				acc[0] + coord[0] / coords.length,
+			// 				acc[1] + coord[1] / coords.length,
+			// 			],
+			// 			[0, 0]
+			// 		);
+
+			// 		return assigned.map((user, i) => ({
+			// 			type: "Feature",
+			// 			geometry: {
+			// 				type: "Point",
+			// 				coordinates: [
+			// 					centroid[0] + i * 0.0001,
+			// 					centroid[1],
+			// 				],
+			// 			},
+			// 			properties: {
+			// 				label: user.name.charAt(0).toUpperCase(),
+			// 			},
+			// 		}));
+			// 	}
+			// );
+
+			// console.log(labelFeatures);
+
+			// labelSource?.setData({
+			// 	type: "FeatureCollection",
+			// 	features: labelFeatures,
+			// });
 		}
 	}, [polygons, mapLoaded, getUsersForPolygon, getUsersForPolygonFull]);
 
