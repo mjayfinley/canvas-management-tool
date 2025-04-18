@@ -376,7 +376,7 @@ const MapInterface = () => {
 					Edit Region
 				</MenuItem>
 				<MenuItem onClick={(e) => handleAddCanvassers(e)}>
-					Add Canvassers
+					Edit Canvassers
 				</MenuItem>
 			</Popover>
 			<AssignCanvasserModal

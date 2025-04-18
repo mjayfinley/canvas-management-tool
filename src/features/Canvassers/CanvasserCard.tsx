@@ -19,7 +19,7 @@ const CanvasserCard = ({ canvasser, onDelete }: CanvasserCardProps) => {
 			(a) => a.userId === canvasser.id
 		);
 		setNumberOfAssignments(assignedRegions.length);
-	}, []);
+	}, [assignments]);
 
 	console.log(numberOfAssignments);
 
