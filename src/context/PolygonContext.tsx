@@ -5,13 +5,13 @@ import {
 	deletePolygon,
 	updatePolygon as updatePolygonApi,
 } from "../hooks/usePolygons";
-import { PolygonFeature } from "../utils/types";
+import { Feature } from "geojson";
 
 interface PolygonContextType {
-	polygons: PolygonFeature[];
-	addPolygon: (polygon: PolygonFeature) => void;
+	polygons: Feature[];
+	addPolygon: (polygon: Feature) => void;
 	removePolygon: (id: string) => void;
-	updatePolygon: (polygon: PolygonFeature) => void;
+	updatePolygon: (polygon: Feature) => void;
 }
 
 const PolygonContext = createContext<PolygonContextType | undefined>(undefined);
@@ -28,7 +28,7 @@ export const PolygonProvider = ({
 }: {
 	children: React.ReactNode;
 }) => {
-	const [polygons, setPolygons] = useState<PolygonFeature[]>([]);
+	const [polygons, setPolygons] = useState<Feature[]>([]);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -38,12 +38,12 @@ export const PolygonProvider = ({
 		fetchData();
 	}, []);
 
-	const addPolygon = async (polygon: PolygonFeature) => {
+	const addPolygon = async (polygon: Feature) => {
 		await savePolygon(polygon);
 		setPolygons((prev) => [...prev, polygon]);
 	};
 
-	const updatePolygon = async (polygon: PolygonFeature) => {
+	const updatePolygon = async (polygon: Feature) => {
 		if (!polygon.id) return;
 		await updatePolygonApi(polygon);
 		setPolygons((prev) =>

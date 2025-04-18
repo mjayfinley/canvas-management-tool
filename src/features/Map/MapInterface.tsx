@@ -2,17 +2,21 @@ import { useEffect, useRef, useState } from "react";
 import { Box, Modal, Typography } from "@mui/material";
 import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import { v4 as uuidv4 } from "uuid";
 import { usePolygonContext } from "../../context/PolygonContext";
 import AssignCanvasserDropdown from "./AssignCanvasserDropdown";
 
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { Feature } from "geojson";
+import { generateRandomNumber } from "../../utils/randomIdGenerator";
 
 const MapInterface = () => {
 	const mapRef = useRef<mapboxgl.Map | null>(null);
 	const mapContainerRef = useRef<HTMLDivElement | null>(null);
 	const drawRef = useRef<MapboxDraw | null>(null);
-	const { polygons } = usePolygonContext();
+	const { polygons, addPolygon, updatePolygon, removePolygon } =
+		usePolygonContext();
 
 	const [selectedPolygon, setSelectedPolygon] =
 		useState<mapboxgl.GeoJSONFeature | null>(null);
@@ -73,6 +77,35 @@ const MapInterface = () => {
 					"line-width": 2,
 				},
 			});
+
+			map.on("draw.create", (e: any) => {
+				const feature: Feature = e.features[0];
+				if (!feature) return;
+
+				feature.id = generateRandomNumber();
+				feature.properties = {
+					...(feature.properties || {}),
+					color: "lightblue",
+				};
+
+				addPolygon(feature);
+				draw.delete(feature.id);
+			});
+
+			map.on("draw.update", (e: any) => {
+				const feature: Feature = e.features[0];
+				if (!feature?.id) return;
+
+				updatePolygon(feature);
+				draw.delete(feature.id.toString());
+			});
+
+			map.on("draw.delete", (e: any) => {
+				const feature: Feature = e.features[0];
+				if (!feature?.id) return;
+
+				removePolygon(feature.id.toString());
+			});
 		});
 
 		return () => {
@@ -86,10 +119,17 @@ const MapInterface = () => {
 		const source = mapRef.current.getSource(
 			"polygons"
 		) as mapboxgl.GeoJSONSource;
+
 		if (source && polygons) {
+			const featuresWithId = polygons.map((feature) => {
+				return {
+					...feature,
+					id: feature.id || feature.properties?.id || uuidv4(),
+				};
+			});
 			source.setData({
 				type: "FeatureCollection",
-				features: polygons,
+				features: featuresWithId,
 			});
 		}
 	}, [polygons, mapLoaded]);
