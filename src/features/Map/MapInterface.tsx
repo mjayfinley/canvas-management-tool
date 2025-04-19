@@ -20,7 +20,7 @@ const MapInterface = () => {
 
 	const { polygons, addPolygon, updateSelectedPolygon, removePolygon } =
 		usePolygonContext();
-	const { getUsersForPolygon, getUsersForPolygonFull } =
+	const { getCanvassersForRegion, getCanvassersForRegionFull } =
 		useAssignmentContext();
 
 	const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -239,7 +239,7 @@ const MapInterface = () => {
 		if (source && polygons) {
 			const featuresWithId = polygons.map((feature) => {
 				const id = feature.id?.toString() ?? generateRandomNumber();
-				const assigned = getUsersForPolygon(id);
+				const assigned = getCanvassersForRegion(id);
 				const assignedColor =
 					assigned.length > 0 ? "#4caf50" : "lightblue";
 
@@ -263,7 +263,7 @@ const MapInterface = () => {
 
 			featuresWithId.forEach((feature) => {
 				const id = feature.id?.toString() ?? generateRandomNumber();
-				const assigned = getUsersForPolygonFull(id);
+				const assigned = getCanvassersForRegionFull(id);
 				const center = centerOfMass(feature as any).geometry
 					.coordinates;
 
@@ -349,7 +349,12 @@ const MapInterface = () => {
 
 	useEffect(() => {
 		updateMap();
-	}, [polygons, mapLoaded, getUsersForPolygon, getUsersForPolygonFull]);
+	}, [
+		polygons,
+		mapLoaded,
+		getCanvassersForRegion,
+		getCanvassersForRegionFull,
+	]);
 
 	useEffect(() => {
 		isEditingRef.current = isEditing;

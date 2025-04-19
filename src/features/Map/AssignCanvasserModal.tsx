@@ -12,26 +12,28 @@ interface Props {
 
 const AssignCanvasserModal = ({ open, onClose, polygonId }: Props) => {
 	const { canvassers } = useCanvassersContext();
-	const { getUsersForPolygon, assignUser, unassignUser } =
+	const { getCanvassersForRegion, assignCanvasser, unassignCanvasser } =
 		useAssignmentContext();
 
 	const [selected, setSelected] = useState<string[]>([]);
 
 	useEffect(() => {
 		if (polygonId) {
-			setSelected(getUsersForPolygon(polygonId));
+			setSelected(getCanvassersForRegion(polygonId));
 		}
 	}, [polygonId]);
 
 	const handleSave = async () => {
 		if (!polygonId) return;
 
-		const current = getUsersForPolygon(polygonId);
+		const current = getCanvassersForRegion(polygonId);
 		const toAdd = selected.filter((id) => !current.includes(id));
 		const toRemove = current.filter((id) => !selected.includes(id));
 
-		await Promise.all(toAdd.map((id) => assignUser(polygonId, id)));
-		await Promise.all(toRemove.map((id) => unassignUser(polygonId, id)));
+		await Promise.all(toAdd.map((id) => assignCanvasser(polygonId, id)));
+		await Promise.all(
+			toRemove.map((id) => unassignCanvasser(polygonId, id))
+		);
 
 		onClose();
 	};

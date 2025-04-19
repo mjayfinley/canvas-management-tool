@@ -7,10 +7,10 @@ import useAssignments from "../hooks/useAssignments";
 
 interface AssignmentContextType {
 	assignments: PolygonUserAssignment[];
-	assignUser: (polygonId: string, userId: string) => void;
-	unassignUser: (polygonId: string, userId: string) => void;
-	getUsersForPolygon: (polygonId: string) => string[];
-	getUsersForPolygonFull: (polygonId: string) => Canvasser[];
+	assignCanvasser: (polygonId: string, userId: string) => void;
+	unassignCanvasser: (polygonId: string, userId: string) => void;
+	getCanvassersForRegion: (polygonId: string) => string[];
+	getCanvassersForRegionFull: (polygonId: string) => Canvasser[];
 	assignmentsError: string | null;
 	assignmentsLoading: boolean;
 }
@@ -42,13 +42,13 @@ export const AssignmentProvider = ({
 		fetchData();
 	}, [canvassers]);
 
-	const assignUser = async (polygonId: string, userId: string) => {
+	const assignCanvasser = async (polygonId: string, userId: string) => {
 		const newAssignment = { polygonId, userId, id: generateRandomNumber() };
 		await assignCanvasserToPolygon(newAssignment);
 		setAssignments((prev) => [...prev, newAssignment]);
 	};
 
-	const unassignUser = async (polygonId: string, userId: string) => {
+	const unassignCanvasser = async (polygonId: string, userId: string) => {
 		const found = assignments.find(
 			(a) => a.polygonId === polygonId && a.userId === userId
 		);
@@ -62,14 +62,14 @@ export const AssignmentProvider = ({
 		);
 	};
 
-	const getUsersForPolygon = (polygonId: string): string[] => {
+	const getCanvassersForRegion = (polygonId: string): string[] => {
 		return assignments
 			.filter((a) => a.polygonId === polygonId)
 			.map((a) => a.userId);
 	};
 
-	const getUsersForPolygonFull = (polygonId: string): Canvasser[] => {
-		const userIds = getUsersForPolygon(polygonId);
+	const getCanvassersForRegionFull = (polygonId: string): Canvasser[] => {
+		const userIds = getCanvassersForRegion(polygonId);
 		return canvassers.filter((u) => userIds.includes(u.id));
 	};
 
@@ -77,10 +77,10 @@ export const AssignmentProvider = ({
 		<AssignmentContext.Provider
 			value={{
 				assignments,
-				assignUser,
-				unassignUser,
-				getUsersForPolygon,
-				getUsersForPolygonFull,
+				assignCanvasser,
+				unassignCanvasser,
+				getCanvassersForRegion,
+				getCanvassersForRegionFull,
 				assignmentsLoading,
 				assignmentsError,
 			}}
