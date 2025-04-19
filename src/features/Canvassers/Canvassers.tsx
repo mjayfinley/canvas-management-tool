@@ -105,7 +105,7 @@ const Canvassers = () => {
 				</Box>
 			) : canvassers.length === 0 ? (
 				<Typography variant="body2" color="text.secondary">
-					No users added yet.
+					No Canvassers added yet.
 				</Typography>
 			) : (
 				<Box>

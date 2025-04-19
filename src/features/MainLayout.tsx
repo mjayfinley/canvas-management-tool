@@ -8,7 +8,7 @@ import MapInterface from "./Map/MapInterface";
 const MainLayout = () => {
 	return (
 		<Layout>
-			<Box sx={{ display: "flex", height: "90vh", width: "100%" }}>
+			<Box sx={{ display: "flex", height: "90vh", width: "100%", mt: 1 }}>
 				<Canvassers />
 				<Box flex={1} ml={1} mr={1}>
 					<Routes>

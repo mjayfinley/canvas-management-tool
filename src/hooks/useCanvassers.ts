@@ -30,7 +30,7 @@ const useCanvassers = () => {
 		setError(null);
 
 		try {
-			const res = await api.post("/canvasser", canvasser);
+			const res = await api.post("/canvassers", canvasser);
 			return res.data;
 		} catch (err: any) {
 			setError(
@@ -47,7 +47,7 @@ const useCanvassers = () => {
 		setError(null);
 
 		try {
-			await api.delete(`/canvasser/${id}`);
+			await api.delete(`/canvassers/${id}`);
 		} catch (err: any) {
 			setError(
 				err.response?.data?.message || "Could not delete canvasser"
