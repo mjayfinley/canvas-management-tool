@@ -17,13 +17,6 @@ interface PolygonContextType {
 
 const PolygonContext = createContext<PolygonContextType | undefined>(undefined);
 
-export const usePolygonContext = () => {
-	const context = useContext(PolygonContext);
-	if (!context)
-		throw new Error("usePolygonContext must be used within provider");
-	return context;
-};
-
 export const PolygonProvider = ({
 	children,
 }: {
@@ -70,4 +63,11 @@ export const PolygonProvider = ({
 			{children}
 		</PolygonContext.Provider>
 	);
+};
+
+export const usePolygonContext = () => {
+	const context = useContext(PolygonContext);
+	if (!context)
+		throw new Error("usePolygonContext must be used within provider");
+	return context;
 };

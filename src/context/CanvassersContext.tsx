@@ -90,7 +90,7 @@ export const CanvassersProvider = ({
 	);
 };
 
-export const useCanvassers = (): CanvassersContextType => {
+export const useCanvassersContext = (): CanvassersContextType => {
 	const context = useContext(CanvassersContext);
 	if (!context)
 		throw new Error("useUsers must be used within a UsersProvider");

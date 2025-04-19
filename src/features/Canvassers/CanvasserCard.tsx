@@ -10,9 +10,14 @@ import { useCanvasserContext } from "../../context/CanvasserContext";
 interface CanvasserCardProps {
 	canvasser: Canvasser;
 	onDelete: (id: string) => void;
+	setOpen: (open: boolean) => void;
 }
 
-const CanvasserCard = ({ canvasser, onDelete }: CanvasserCardProps) => {
+const CanvasserCard = ({
+	canvasser,
+	onDelete,
+	setOpen,
+}: CanvasserCardProps) => {
 	const { assignments } = useAssignmentContext();
 	const { setSelectedCanvasser } = useCanvasserContext();
 	const navigate = useNavigate();
@@ -27,6 +32,7 @@ const CanvasserCard = ({ canvasser, onDelete }: CanvasserCardProps) => {
 
 	const handleSelectCanvasser = () => {
 		setSelectedCanvasser(canvasser);
+		setOpen(false);
 		navigate("/dashboard");
 	};
 

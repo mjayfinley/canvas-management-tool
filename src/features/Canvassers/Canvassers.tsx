@@ -10,7 +10,7 @@ import {
 	Paper,
 } from "@mui/material";
 import CustomInput from "../../components/Input";
-import { useCanvassers } from "../../context/CanvassersContext";
+import { useCanvassersContext } from "../../context/CanvassersContext";
 import CanvasserCard from "./CanvasserCard";
 
 import { Add, Close, PeopleAlt } from "@mui/icons-material";
@@ -24,7 +24,7 @@ interface Canvassers {
 
 const Canvassers = () => {
 	const { canvassers, loading, addCanvasser, removeCanvasser } =
-		useCanvassers();
+		useCanvassersContext();
 	const [open, setOpen] = useState(false);
 	const [newName, setName] = useState("");
 	const [newEmail, setEmail] = useState("");
@@ -44,6 +44,10 @@ const Canvassers = () => {
 		setEmail("");
 
 		setModalOpen(false);
+	};
+
+	const handleSetCanvasserManagementOpen = (open: boolean) => {
+		setOpen(open);
 	};
 
 	const renderPanelContent = (
@@ -79,7 +83,9 @@ const Canvassers = () => {
 				</IconButton>
 
 				{isMobile && (
-					<IconButton onClick={() => setOpen(false)}>
+					<IconButton
+						onClick={() => handleSetCanvasserManagementOpen(false)}
+					>
 						<Close />
 					</IconButton>
 				)}
@@ -100,6 +106,7 @@ const Canvassers = () => {
 							key={canvasser.id}
 							canvasser={canvasser}
 							onDelete={removeCanvasser}
+							setOpen={handleSetCanvasserManagementOpen}
 						/>
 					))}
 				</Box>
@@ -112,7 +119,7 @@ const Canvassers = () => {
 			{isMobile && (
 				<IconButton
 					color="inherit"
-					onClick={() => setOpen(true)}
+					onClick={() => handleSetCanvasserManagementOpen(true)}
 					disableRipple
 					sx={{
 						position: "absolute",
@@ -135,7 +142,7 @@ const Canvassers = () => {
 				<Drawer
 					anchor="left"
 					open={open}
-					onClose={() => setOpen(false)}
+					onClose={() => handleSetCanvasserManagementOpen(false)}
 				>
 					{renderPanelContent}
 				</Drawer>

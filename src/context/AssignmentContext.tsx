@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { PolygonUserAssignment } from "../utils/types";
+import { Canvasser, PolygonUserAssignment } from "../utils/types";
 import {
 	getAssignments,
 	assignUserToPolygon,
 	removeUserFromPolygon,
 } from "../hooks/useAssignments";
-import { Canvasser, useCanvassers } from "../context/CanvassersContext";
+import { useCanvassersContext } from "../context/CanvassersContext";
 import { generateRandomNumber } from "../utils/helperFunctions";
 
 interface AssignmentContextType {
@@ -25,7 +25,7 @@ export const AssignmentProvider = ({
 }: {
 	children: React.ReactNode;
 }) => {
-	const { canvassers } = useCanvassers();
+	const { canvassers } = useCanvassersContext();
 	const [assignments, setAssignments] = useState<PolygonUserAssignment[]>([]);
 
 	useEffect(() => {

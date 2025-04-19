@@ -1,6 +1,6 @@
 import { Autocomplete, TextField, Chip } from "@mui/material";
 import { useAssignmentContext } from "../../context/AssignmentContext";
-import { useCanvassers } from "../../context/CanvassersContext";
+import { useCanvassersContext } from "../../context/CanvassersContext";
 import { useState, useEffect } from "react";
 import CustomModal from "../../components/Modal";
 
@@ -11,7 +11,7 @@ interface Props {
 }
 
 const AssignCanvasserModal = ({ open, onClose, polygonId }: Props) => {
-	const { canvassers } = useCanvassers();
+	const { canvassers } = useCanvassersContext();
 	const { getUsersForPolygon, assignUser, unassignUser } =
 		useAssignmentContext();
 

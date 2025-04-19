@@ -19,7 +19,6 @@ const CustomButton = ({
 			variant="contained"
 			color={color}
 			disabled={loading || disabled}
-			fullWidth
 			{...props}
 		>
 			{loading ? "Loading..." : label}
