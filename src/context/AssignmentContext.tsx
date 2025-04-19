@@ -1,12 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Canvasser, PolygonUserAssignment } from "../utils/types";
-import {
-	getAssignments,
-	assignUserToPolygon,
-	removeUserFromPolygon,
-} from "../hooks/useAssignments";
+
 import { useCanvassersContext } from "../context/CanvassersContext";
 import { generateRandomNumber } from "../utils/helperFunctions";
+import useAssignments from "../hooks/useAssignments";
 
 interface AssignmentContextType {
 	assignments: PolygonUserAssignment[];
@@ -14,6 +11,8 @@ interface AssignmentContextType {
 	unassignUser: (polygonId: string, userId: string) => void;
 	getUsersForPolygon: (polygonId: string) => string[];
 	getUsersForPolygonFull: (polygonId: string) => Canvasser[];
+	assignmentsError: string | null;
+	assignmentsLoading: boolean;
 }
 
 const AssignmentContext = createContext<AssignmentContextType | undefined>(
@@ -26,6 +25,13 @@ export const AssignmentProvider = ({
 	children: React.ReactNode;
 }) => {
 	const { canvassers } = useCanvassersContext();
+	const {
+		getAssignments,
+		assignCanvasserToPolygon,
+		removeCanvasserFromPolygon,
+		assignmentsLoading,
+		assignmentsError,
+	} = useAssignments();
 	const [assignments, setAssignments] = useState<PolygonUserAssignment[]>([]);
 
 	useEffect(() => {
@@ -38,7 +44,7 @@ export const AssignmentProvider = ({
 
 	const assignUser = async (polygonId: string, userId: string) => {
 		const newAssignment = { polygonId, userId, id: generateRandomNumber() };
-		await assignUserToPolygon(newAssignment);
+		await assignCanvasserToPolygon(newAssignment);
 		setAssignments((prev) => [...prev, newAssignment]);
 	};
 
@@ -48,7 +54,7 @@ export const AssignmentProvider = ({
 		);
 		if (!found) return;
 
-		await removeUserFromPolygon(found.id);
+		await removeCanvasserFromPolygon(found.id);
 		setAssignments((prev) =>
 			prev.filter(
 				(a) => !(a.polygonId === polygonId && a.userId === userId)
@@ -75,6 +81,8 @@ export const AssignmentProvider = ({
 				unassignUser,
 				getUsersForPolygon,
 				getUsersForPolygonFull,
+				assignmentsLoading,
+				assignmentsError,
 			}}
 		>
 			{children}

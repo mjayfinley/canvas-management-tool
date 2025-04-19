@@ -23,7 +23,7 @@ interface Canvassers {
 }
 
 const Canvassers = () => {
-	const { canvassers, loading, addCanvasser, removeCanvasser } =
+	const { canvassers, canvassersLoading, addCanvasser, removeCanvasser } =
 		useCanvassersContext();
 	const [open, setOpen] = useState(false);
 	const [newName, setName] = useState("");
@@ -36,13 +36,21 @@ const Canvassers = () => {
 	const handleAddCanvasser = async () => {
 		const newCanvasser = {
 			id: Date.now().toString(),
-			name: newName,
+			name:
+				newName.charAt(0).toUpperCase() +
+				newName.slice(1).toLowerCase(),
 			email: newEmail,
 		};
 		await addCanvasser(newCanvasser);
 		setName("");
 		setEmail("");
 
+		setModalOpen(false);
+	};
+
+	const handleCancelAddCanvasser = () => {
+		setName("");
+		setEmail("");
 		setModalOpen(false);
 	};
 
@@ -91,7 +99,7 @@ const Canvassers = () => {
 				)}
 			</Box>
 
-			{loading ? (
+			{canvassersLoading ? (
 				<Box textAlign="center" mt={4}>
 					<CircularProgress />
 				</Box>
@@ -159,7 +167,7 @@ const Canvassers = () => {
 			)}
 			<CustomModal
 				open={modalOpen}
-				onClose={() => setModalOpen(false)}
+				onClose={handleCancelAddCanvasser}
 				title="Add New Canvasser"
 				content={
 					<>
@@ -176,6 +184,7 @@ const Canvassers = () => {
 					</>
 				}
 				onConfirm={handleAddCanvasser}
+				confirmDisabled={!newName || !newEmail}
 				confirmText="Add"
 			/>
 		</>

@@ -1,3 +1,5 @@
+import { CanvasserStat } from "./types";
+
 export const generateRandomNumber = () => {
 	const min = 100000000;
 	const max = 1000000000;
@@ -35,3 +37,13 @@ export const generateColors = (count: number): string[] => {
 		(_, i) => baseColors[i % baseColors.length]
 	);
 };
+
+export const createMockStat = (canvasserId: string): CanvasserStat => ({
+	canvasserId,
+	callbacks: Math.floor(Math.random() * 10),
+	doorsKnocked: Math.floor(Math.random() * 100),
+	conversations: Math.floor(Math.random() * 60),
+	followUpsScheduled: Math.floor(Math.random() * 5),
+	surveysCompleted: Math.floor(Math.random() * 50),
+	hoursWorked: Math.floor(Math.random() * 20),
+});

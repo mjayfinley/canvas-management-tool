@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import { api } from "../utils/constants";
 import { filter, isEmpty, matches } from "lodash-es";
 import { useAuthContext } from "../context/AuthContext";
 
@@ -25,10 +25,7 @@ const useAuth = () => {
 		setError(null);
 
 		try {
-			const response = await axios.post(
-				"http://localhost:3000/users",
-				formData
-			);
+			const response = await api.post("/users", formData);
 			return response.data;
 		} catch (err: any) {
 			setError(err.response?.data?.message || "Registration failed");
@@ -43,7 +40,7 @@ const useAuth = () => {
 		setError(null);
 
 		try {
-			const response = await axios.get("http://localhost:3000/users");
+			const response = await api.get("/users");
 
 			const user = filter(response.data, matches(formData));
 

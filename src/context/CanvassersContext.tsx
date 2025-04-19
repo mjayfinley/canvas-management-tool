@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
-import { getAssignments, removeUserFromPolygon } from "../hooks/useAssignments";
 import { Canvasser } from "../utils/types";
 import { useCanvasserStatsContext } from "./CanvasserStatsContext";
+import useCanvassers from "../hooks/useCanvassers";
+import useAssignments from "../hooks/useAssignments";
 
 interface CanvassersContextType {
 	canvassers: Canvasser[];
-	loading: boolean;
+	canvassersLoading: boolean;
+	canvassersError: string | null;
 	addCanvasser: (canvasser: Canvasser) => Promise<void>;
 	removeCanvasser: (id: string) => Promise<void>;
 	refetchCanvassers: () => Promise<void>;
@@ -16,59 +17,45 @@ const CanvassersContext = createContext<CanvassersContextType | undefined>(
 	undefined
 );
 
-const API_URL = "http://localhost:3000/canvassers";
-
 export const CanvassersProvider = ({
 	children,
 }: {
 	children: React.ReactNode;
 }) => {
 	const { addStat, removeStat } = useCanvasserStatsContext();
+	const {
+		getCanvassers,
+		createCanvasser,
+		deleteCanvasser,
+		canvassersError,
+		canvassersLoading,
+	} = useCanvassers();
+	const { getAssignments, removeCanvasserFromPolygon } = useAssignments();
 	const [canvassers, setCanvassers] = useState<Canvasser[]>([]);
-	const [loading, setLoading] = useState<boolean>(false);
 
 	const refetchCanvassers = async () => {
-		setLoading(true);
-		try {
-			const response = await axios.get<Canvasser[]>(API_URL);
-			setCanvassers(response.data);
-		} catch (err) {
-			console.error("Failed to fetch users:", err);
-		} finally {
-			setLoading(false);
-		}
+		const response = await getCanvassers();
+		setCanvassers(response);
 	};
 
 	const addCanvasser = async (canvasser: Canvasser) => {
-		try {
-			const response = await axios.post<Canvasser>(API_URL, {
-				id: canvasser.id,
-				name: canvasser.name,
-				email: canvasser.email,
-			});
-			setCanvassers((prev) => [...prev, response.data]);
-			addStat(canvasser.id);
-		} catch (err) {
-			console.error("Failed to add user:", err);
-		}
+		const response = await createCanvasser(canvasser);
+		setCanvassers((prev) => [...prev, response]);
+		addStat(canvasser.id);
 	};
 
 	const removeCanvasser = async (id: string) => {
-		try {
-			const assignmentData = await getAssignments();
-			await axios.delete(`${API_URL}/${id}`);
-			const canvaserAssignments = assignmentData.filter(
-				(a) => a.userId === id
-			);
+		const assignmentData = await getAssignments();
+		await deleteCanvasser(id);
+		const canvaserAssignments = assignmentData.filter(
+			(a) => a.userId === id
+		);
 
-			await canvaserAssignments.forEach((assignment) => {
-				removeUserFromPolygon(assignment.id);
-			});
-			removeStat(id);
-			setCanvassers((prev) => prev.filter((u) => u.id !== id));
-		} catch (err) {
-			console.error("Failed to remove user:", err);
-		}
+		await canvaserAssignments.forEach((assignment) => {
+			removeCanvasserFromPolygon(assignment.id);
+		});
+		removeStat(id);
+		setCanvassers((prev) => prev.filter((u) => u.id !== id));
 	};
 
 	useEffect(() => {
@@ -79,10 +66,11 @@ export const CanvassersProvider = ({
 		<CanvassersContext.Provider
 			value={{
 				canvassers,
-				loading,
 				addCanvasser,
 				removeCanvasser,
 				refetchCanvassers,
+				canvassersLoading,
+				canvassersError,
 			}}
 		>
 			{children}

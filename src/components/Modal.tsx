@@ -14,6 +14,7 @@ interface CustomModalProps {
 	onClose: () => void;
 	onConfirm?: () => void;
 	confirmText?: string;
+	confirmDisabled?: boolean;
 	cancelText?: string;
 }
 
@@ -24,6 +25,7 @@ const CustomModal = ({
 	onClose,
 	onConfirm,
 	confirmText = "Confirm",
+	confirmDisabled = false,
 	cancelText = "Cancel",
 }: CustomModalProps) => {
 	return (
@@ -41,6 +43,7 @@ const CustomModal = ({
 						onClick={onConfirm}
 						color="primary"
 						variant="contained"
+						disabled={confirmDisabled}
 					>
 						{confirmText}
 					</Button>

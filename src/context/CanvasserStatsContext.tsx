@@ -1,17 +1,15 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import {
-	CanvasserStat,
-	createMockStat,
-	getStats,
-	deleteStatByCanvasserId,
-	createStat,
-} from "../hooks/useCanvasserStats";
+import { CanvasserStat } from "../utils/types";
+import { createMockStat } from "../utils/helperFunctions";
+import useCanvasserStats from "../hooks/useCanvasserStats";
 
 interface CanvasserStatsContextType {
 	stats: CanvasserStat[];
 	fetchStats: () => void;
 	addStat: (canvasserId: string) => void;
 	removeStat: (canvasserId: string) => void;
+	statsLoading: boolean;
+	statsError: string | null;
 }
 
 const CanvasserStatsContext = createContext<
@@ -23,6 +21,13 @@ export const CanvasserStatsProvider = ({
 }: {
 	children: React.ReactNode;
 }) => {
+	const {
+		getStats,
+		createStat,
+		deleteStatByCanvasserId,
+		statsLoading,
+		statsError,
+	} = useCanvasserStats();
 	const [stats, setStats] = useState<CanvasserStat[]>([]);
 
 	const fetchStats = async () => {
@@ -49,7 +54,14 @@ export const CanvasserStatsProvider = ({
 
 	return (
 		<CanvasserStatsContext.Provider
-			value={{ stats, fetchStats, addStat, removeStat }}
+			value={{
+				stats,
+				fetchStats,
+				addStat,
+				removeStat,
+				statsLoading,
+				statsError,
+			}}
 		>
 			{children}
 		</CanvasserStatsContext.Provider>

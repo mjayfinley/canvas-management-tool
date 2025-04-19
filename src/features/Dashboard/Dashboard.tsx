@@ -10,13 +10,12 @@ import {
 } from "chart.js";
 import { Pie, Bar } from "react-chartjs-2";
 import { useCanvasserStatsContext } from "../../context/CanvasserStatsContext";
-import { CanvasserStat } from "../../hooks/useCanvasserStats";
 import { useCanvasserContext } from "../../context/CanvasserContext";
 import { useAssignmentContext } from "../../context/AssignmentContext";
 import { generateColors, sumArray } from "../../utils/helperFunctions";
 import { useCanvassersContext } from "../../context/CanvassersContext";
 import CustomButton from "../../components/Button";
-import { useEffect } from "react";
+import { CanvasserStat } from "../../utils/types";
 
 ChartJS.register(
 	ArcElement,
@@ -32,6 +31,7 @@ const Dashboard = () => {
 	const { selectedCanvasser, setSelectedCanvasser } = useCanvasserContext();
 	const { assignments } = useAssignmentContext();
 	const { canvassers } = useCanvassersContext();
+
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 

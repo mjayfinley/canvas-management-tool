@@ -18,7 +18,7 @@ const MapInterface = () => {
 	const drawRef = useRef<MapboxDraw | null>(null);
 	const markerRefs = useRef<mapboxgl.Marker[]>([]);
 
-	const { polygons, addPolygon, updatePolygon, removePolygon } =
+	const { polygons, addPolygon, updateSelectedPolygon, removePolygon } =
 		usePolygonContext();
 	const { getUsersForPolygon, getUsersForPolygonFull } =
 		useAssignmentContext();
@@ -103,7 +103,7 @@ const MapInterface = () => {
 				const feature: Feature = e.features[0];
 				if (!feature?.id) return;
 
-				updatePolygon(feature);
+				updateSelectedPolygon(feature);
 				if (drawRef.current) {
 					drawRef.current.delete(feature.id.toString());
 					restoreDrawControls(false);

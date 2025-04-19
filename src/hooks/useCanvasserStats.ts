@@ -1,46 +1,73 @@
-import axios from "axios";
+import { useState } from "react";
+import { api } from "../utils/constants";
+import { CanvasserStat } from "../utils/types";
 
-export interface CanvasserStat {
-	id?: string;
-	canvasserId: string;
-	callbacks: number;
-	doorsKnocked: number;
-	conversations: number;
-	followUpsScheduled: number;
-	surveysCompleted: number;
-	hoursWorked: number;
-}
+const useCanvasserStats = () => {
+	const [statsLoading, setLoading] = useState(false);
+	const [statsError, setError] = useState<string | null>(null);
 
-const BASE_URL = "http://localhost:3000/canvasserStats";
+	const getStats = async (): Promise<CanvasserStat[]> => {
+		setLoading(true);
+		setError(null);
 
-export const getStats = async (): Promise<CanvasserStat[]> => {
-	const res = await axios.get(BASE_URL);
-	return res.data;
+		try {
+			const res = await api.get("/canvasserStats");
+			return res.data;
+		} catch (err: any) {
+			setError(err.response?.data?.message || "Stats failed to load");
+			throw err;
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const createStat = async (stat: CanvasserStat): Promise<CanvasserStat> => {
+		setLoading(true);
+		setError(null);
+
+		try {
+			const res = await api.post("/canvasserStats", stat);
+			return res.data;
+		} catch (err: any) {
+			setError(err.response?.data?.message || "Failed to create stats");
+			throw err;
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const deleteStatByCanvasserId = async (
+		canvasserId: string
+	): Promise<void> => {
+		setLoading(true);
+		setError(null);
+
+		try {
+			const res = await api.get(
+				`/canvasserStats?canvasserId=${canvasserId}`
+			);
+			const entries = res.data;
+			for (const entry of entries) {
+				await api.delete(`/canvasserStats/${entry.id}`);
+			}
+		} catch (err: any) {
+			setError(
+				err.response?.data?.message ||
+					"Failed to delete canvasser stats"
+			);
+			throw err;
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	return {
+		getStats,
+		createStat,
+		deleteStatByCanvasserId,
+		statsLoading,
+		statsError,
+	};
 };
 
-export const createStat = async (
-	stat: CanvasserStat
-): Promise<CanvasserStat> => {
-	const res = await axios.post(BASE_URL, stat);
-	return res.data;
-};
-
-export const deleteStatByCanvasserId = async (
-	canvasserId: string
-): Promise<void> => {
-	const res = await axios.get(`${BASE_URL}?canvasserId=${canvasserId}`);
-	const entries = res.data;
-	for (const entry of entries) {
-		await axios.delete(`${BASE_URL}/${entry.id}`);
-	}
-};
-
-export const createMockStat = (canvasserId: string): CanvasserStat => ({
-	canvasserId,
-	callbacks: Math.floor(Math.random() * 10),
-	doorsKnocked: Math.floor(Math.random() * 100),
-	conversations: Math.floor(Math.random() * 60),
-	followUpsScheduled: Math.floor(Math.random() * 5),
-	surveysCompleted: Math.floor(Math.random() * 50),
-	hoursWorked: Math.floor(Math.random() * 20),
-});
+export default useCanvasserStats;
