@@ -162,6 +162,7 @@ const MapInterface = () => {
 			el.style.fontWeight = "bold";
 			el.style.fontSize = "14px";
 			el.style.boxShadow = "0 0 4px rgba(0,0,0,0.3)";
+			el.style.cursor = "pointer";
 			el.title = `${user.firstName} ${user.lastName}`;
 			el.innerText = createInitials(user.firstName, user.lastName);
 
