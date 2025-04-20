@@ -10,7 +10,7 @@ import {
 import { useCanvassersContext } from "../../context/CanvassersContext";
 
 import { PeopleAlt } from "@mui/icons-material";
-import { getFirstInitial } from "../../utils/helperFunctions";
+import { capitalizeFirstInitial } from "../../utils/helperFunctions";
 import AddCanvasser from "./AddCanvasser";
 import CanvasserPanel from "./CanvasserPanel";
 
@@ -32,8 +32,8 @@ const Canvassers = () => {
 	const handleAddCanvasser = async () => {
 		const formattedCanvasser = {
 			id: Date.now().toString(),
-			firstName: getFirstInitial(newCanvasser.firstName),
-			lastName: getFirstInitial(newCanvasser.lastName),
+			firstName: capitalizeFirstInitial(newCanvasser.firstName),
+			lastName: capitalizeFirstInitial(newCanvasser.lastName),
 			email: newCanvasser.email,
 		};
 		await addCanvasser(formattedCanvasser);

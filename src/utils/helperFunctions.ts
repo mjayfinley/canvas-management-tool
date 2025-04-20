@@ -48,8 +48,14 @@ export const createMockStat = (canvasserId: string): CanvasserStat => ({
 	hoursWorked: Math.floor(Math.random() * 20),
 });
 
-export const getFirstInitial = (name: string) => {
+export const capitalizeFirstInitial = (name: string) => {
 	return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+};
+
+export const createInitials = (firstName: string, lastName: string) => {
+	const firstInitial = firstName.trim().charAt(0).toUpperCase() || "";
+	const lastInitial = lastName.trim().charAt(0).toUpperCase() || "";
+	return `${firstInitial}${lastInitial}`;
 };
 
 export const stringToColor = (str: string) => {

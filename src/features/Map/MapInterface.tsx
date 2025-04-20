@@ -6,8 +6,8 @@ import centerOfMass from "@turf/center-of-mass";
 import { useRegionContext } from "../../context/RegionContext";
 import { Feature } from "geojson";
 import {
+	createInitials,
 	generateRandomNumber,
-	getFirstInitial,
 	stringToColor,
 } from "../../utils/helperFunctions";
 import AssignCanvasserModal from "./AssignCanvasserModal";
@@ -290,9 +290,10 @@ const MapInterface = () => {
 					el.style.fontSize = "14px";
 					el.style.boxShadow = "0 0 4px rgba(0,0,0,0.3)";
 					el.title = `${user.firstName} ${user.lastName}`;
-					el.innerText = `${getFirstInitial(
-						user.firstName
-					)}${getFirstInitial(user.lastName)}`;
+					el.innerText = createInitials(
+						user.firstName,
+						user.lastName
+					);
 
 					const marker = new mapboxgl.Marker({ element: el })
 						.setLngLat([offsetLng, offsetLat])
