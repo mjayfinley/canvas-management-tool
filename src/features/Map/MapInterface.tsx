@@ -1,10 +1,10 @@
 import { MouseEvent, useEffect, useRef, useState } from "react";
 import { Box, Popover, MenuItem } from "@mui/material";
-import mapboxgl from "mapbox-gl";
+import mapboxgl, { MapMouseEvent, MapTouchEvent } from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import centerOfMass from "@turf/center-of-mass";
 import { useRegionContext } from "../../context/RegionContext";
-import { Feature } from "geojson";
+import { Feature, GeoJsonProperties, Geometry } from "geojson";
 import {
 	createInitials,
 	generateRandomNumber,
@@ -15,6 +15,7 @@ import { useAssignmentContext } from "../../context/AssignmentContext";
 
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { Canvasser } from "../../utils/types";
 
 const MapInterface = () => {
 	const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -40,6 +41,137 @@ const MapInterface = () => {
 
 	const isEditingRef = useRef(isEditing);
 	const selectedRegionIdRef = useRef(selectedRegionId);
+
+	const handleEditRegion = (e: MouseEvent<HTMLLIElement>) => {
+		e.stopPropagation();
+		if (!selectedRegionId || !drawRef.current) return;
+
+		const region = regions.find(
+			(p) => p.id?.toString() === selectedRegionId
+		);
+		if (region && mapRef.current) {
+			restoreDrawControls(true);
+			drawRef.current?.add(region);
+			drawRef.current?.changeMode("simple_select", {
+				featureIds: [selectedRegionId],
+			});
+			setIsEditing(true);
+		}
+
+		setAnchorEl(null);
+		setPopoverPosition(null);
+	};
+
+	const handleAddCanvassers = (e: MouseEvent<HTMLLIElement>) => {
+		e.stopPropagation();
+		setAnchorEl(null);
+		setPopoverPosition(null);
+		setModalOpen(true);
+	};
+
+	const restoreDrawControls = (includeTrash = false) => {
+		if (!mapRef.current) return;
+
+		if (drawRef.current) {
+			mapRef.current.removeControl(drawRef.current);
+		}
+
+		drawRef.current = new MapboxDraw({
+			displayControlsDefault: false,
+			controls: {
+				polygon: true,
+				trash: includeTrash,
+			},
+		});
+
+		mapRef.current.addControl(drawRef.current, "top-right");
+	};
+
+	const handleRegionClick = (e: MapMouseEvent | MapTouchEvent) => {
+		if (isEditingRef.current) return;
+		const feature = e.features?.[0];
+		if (!feature?.id || !drawRef.current || !mapRef.current) return;
+
+		const id = feature.id.toString();
+		setSelectedRegionId(id);
+
+		const coordinates = e.lngLat as mapboxgl.LngLatLike;
+		const canvas = mapRef.current.getCanvas();
+		const rect = canvas.getBoundingClientRect();
+
+		const point = mapRef.current.project(coordinates);
+		if (point) {
+			setPopoverPosition([point.x + rect.left, point.y + rect.top]);
+			setAnchorEl(canvas);
+		}
+	};
+
+	const handleOutsideRegionClick = (e: MapMouseEvent | MapTouchEvent) => {
+		if (
+			!mapRef.current ||
+			!isEditingRef.current ||
+			!selectedRegionIdRef.current
+		)
+			return;
+
+		const features = mapRef.current.queryRenderedFeatures(e.point, {
+			layers: ["polygon-fill"],
+		});
+
+		if (features.length === 0) {
+			if (drawRef.current) {
+				drawRef.current.deleteAll();
+				restoreDrawControls(false);
+				setIsEditing(false);
+				setSelectedRegionId(null);
+				setAnchorEl(null);
+				setPopoverPosition(null);
+			}
+		}
+	};
+
+	const mapResetAfterUpdate = (
+		feature: Feature<Geometry, GeoJsonProperties>
+	) => {
+		if (drawRef.current && feature.id) {
+			drawRef.current.delete(feature.id.toString());
+			restoreDrawControls(false);
+			setIsEditing(false);
+			setSelectedRegionId(null);
+		}
+	};
+
+	const createMarker = (feature: Feature, assigned: Canvasser[]) => {
+		const center = centerOfMass(feature as any).geometry.coordinates;
+
+		assigned.forEach((user, i, arr) => {
+			const angle = (2 * Math.PI * i) / arr.length;
+			const radius = 0.00015;
+			const offsetLng = center[0] + radius * Math.cos(angle);
+			const offsetLat = center[1] + radius * Math.sin(angle);
+
+			const el = document.createElement("div");
+			el.style.background = stringToColor(user.firstName);
+			el.style.color = "#fff";
+			el.style.borderRadius = "50%";
+			el.style.width = "30px";
+			el.style.height = "30px";
+			el.style.display = "flex";
+			el.style.justifyContent = "center";
+			el.style.alignItems = "center";
+			el.style.fontWeight = "bold";
+			el.style.fontSize = "14px";
+			el.style.boxShadow = "0 0 4px rgba(0,0,0,0.3)";
+			el.title = `${user.firstName} ${user.lastName}`;
+			el.innerText = createInitials(user.firstName, user.lastName);
+
+			const marker = new mapboxgl.Marker({ element: el })
+				.setLngLat([offsetLng, offsetLat])
+				.addTo(mapRef.current!);
+
+			markerRefs.current.push(marker);
+		});
+	};
 
 	const setUpMap = () => {
 		mapboxgl.accessToken =
@@ -108,12 +240,7 @@ const MapInterface = () => {
 				if (!feature?.id) return;
 
 				updateSelectedRegion(feature);
-				if (drawRef.current) {
-					drawRef.current.delete(feature.id.toString());
-					restoreDrawControls(false);
-					setIsEditing(false);
-					setSelectedRegionId(null);
-				}
+				mapResetAfterUpdate(feature);
 			});
 
 			map.on("draw.delete", (e: any) => {
@@ -121,104 +248,30 @@ const MapInterface = () => {
 				if (!feature?.id) return;
 
 				removeRegion(feature.id.toString());
-				if (drawRef.current) {
-					drawRef.current.delete(feature.id.toString());
-					restoreDrawControls(false);
-					setIsEditing(false);
-					setSelectedRegionId(null);
-				}
+				mapResetAfterUpdate(feature);
+			});
+
+			map.on("mousemove", (e) => {
+				const features = map.queryRenderedFeatures(e.point, {
+					layers: ["polygon-fill"],
+				});
+				map.getCanvas().style.cursor = features.length ? "pointer" : "";
 			});
 
 			map.on("click", "polygon-fill", (e) => {
-				if (isEditingRef.current) return;
-				const feature = e.features?.[0];
-				if (!feature?.id || !drawRef.current || !mapRef.current) return;
-
-				const id = feature.id.toString();
-				setSelectedRegionId(id);
-
-				const coordinates = e.lngLat as mapboxgl.LngLatLike;
-				const canvas = mapRef.current.getCanvas();
-				const rect = canvas.getBoundingClientRect();
-
-				const point = mapRef.current.project(coordinates);
-				if (point) {
-					setPopoverPosition([
-						point.x + rect.left,
-						point.y + rect.top,
-					]);
-					setAnchorEl(canvas);
-				}
+				handleRegionClick(e);
 			});
 
 			map.on("click", (e) => {
-				if (
-					!mapRef.current ||
-					!isEditingRef.current ||
-					!selectedRegionIdRef.current
-				)
-					return;
-
-				const features = mapRef.current.queryRenderedFeatures(e.point, {
-					layers: ["polygon-fill"],
-				});
-
-				if (features.length === 0) {
-					if (drawRef.current) {
-						drawRef.current.deleteAll();
-						restoreDrawControls(false);
-						setIsEditing(false);
-						setSelectedRegionId(null);
-						setAnchorEl(null);
-						setPopoverPosition(null);
-					}
-				}
+				handleOutsideRegionClick(e);
 			});
 
 			map.on("touchstart", "polygon-fill", (e) => {
-				if (isEditingRef.current) return;
-				const feature = e.features?.[0];
-				if (!feature?.id || !drawRef.current || !mapRef.current) return;
-
-				const id = feature.id.toString();
-				setSelectedRegionId(id);
-
-				const coordinates = e.lngLat as mapboxgl.LngLatLike;
-				const canvas = mapRef.current.getCanvas();
-				const rect = canvas.getBoundingClientRect();
-
-				const point = mapRef.current.project(coordinates);
-				if (point) {
-					setPopoverPosition([
-						point.x + rect.left,
-						point.y + rect.top,
-					]);
-					setAnchorEl(canvas);
-				}
+				handleRegionClick(e);
 			});
 
 			map.on("touchstart", (e) => {
-				if (
-					!mapRef.current ||
-					!isEditingRef.current ||
-					!selectedRegionIdRef.current
-				)
-					return;
-
-				const features = mapRef.current.queryRenderedFeatures(e.point, {
-					layers: ["polygon-fill"],
-				});
-
-				if (features.length === 0) {
-					if (drawRef.current) {
-						drawRef.current.deleteAll();
-						restoreDrawControls(false);
-						setIsEditing(false);
-						setSelectedRegionId(null);
-						setAnchorEl(null);
-						setPopoverPosition(null);
-					}
-				}
+				handleOutsideRegionClick(e);
 			});
 		});
 
@@ -268,91 +321,14 @@ const MapInterface = () => {
 			featuresWithId.forEach((feature) => {
 				const id = feature.id?.toString() ?? generateRandomNumber();
 				const assigned = getCanvassersForRegionFull(id);
-				const center = centerOfMass(feature as any).geometry
-					.coordinates;
 
-				assigned.forEach((user, i, arr) => {
-					const angle = (2 * Math.PI * i) / arr.length;
-					const radius = 0.00015;
-					const offsetLng = center[0] + radius * Math.cos(angle);
-					const offsetLat = center[1] + radius * Math.sin(angle);
-
-					const el = document.createElement("div");
-					el.style.background = stringToColor(user.firstName);
-					el.style.color = "#fff";
-					el.style.borderRadius = "50%";
-					el.style.width = "30px";
-					el.style.height = "30px";
-					el.style.display = "flex";
-					el.style.justifyContent = "center";
-					el.style.alignItems = "center";
-					el.style.fontWeight = "bold";
-					el.style.fontSize = "14px";
-					el.style.boxShadow = "0 0 4px rgba(0,0,0,0.3)";
-					el.title = `${user.firstName} ${user.lastName}`;
-					el.innerText = createInitials(
-						user.firstName,
-						user.lastName
-					);
-
-					const marker = new mapboxgl.Marker({ element: el })
-						.setLngLat([offsetLng, offsetLat])
-						.addTo(mapRef.current!);
-
-					markerRefs.current.push(marker);
-				});
+				createMarker(feature, assigned);
 			});
 		}
-	};
-
-	const restoreDrawControls = (includeTrash = false) => {
-		if (!mapRef.current) return;
-
-		if (drawRef.current) {
-			mapRef.current.removeControl(drawRef.current);
-		}
-
-		drawRef.current = new MapboxDraw({
-			displayControlsDefault: false,
-			controls: {
-				polygon: true,
-				trash: includeTrash,
-			},
-		});
-
-		mapRef.current.addControl(drawRef.current, "top-right");
-	};
-
-	const handleEditRegion = (e: MouseEvent<HTMLLIElement>) => {
-		e.stopPropagation();
-		if (!selectedRegionId || !drawRef.current) return;
-
-		const region = regions.find(
-			(p) => p.id?.toString() === selectedRegionId
-		);
-		if (region && mapRef.current) {
-			restoreDrawControls(true);
-			drawRef.current?.add(region);
-			drawRef.current?.changeMode("simple_select", {
-				featureIds: [selectedRegionId],
-			});
-			setIsEditing(true);
-		}
-
-		setAnchorEl(null);
-		setPopoverPosition(null);
-	};
-
-	const handleAddCanvassers = (e: MouseEvent<HTMLLIElement>) => {
-		e.stopPropagation();
-		setAnchorEl(null);
-		setPopoverPosition(null);
-		setModalOpen(true);
 	};
 
 	useEffect(() => {
-		const cleanup = setUpMap();
-		return cleanup;
+		setUpMap();
 	}, []);
 
 	useEffect(() => {
