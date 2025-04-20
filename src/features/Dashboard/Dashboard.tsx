@@ -43,7 +43,7 @@ const Dashboard = () => {
 	const filteredStats = getFilteredStats();
 
 	const assignmentCounts = canvassers.map(
-		(c) => assignments.filter((a) => a.userId === c.id).length
+		(c) => assignments.filter((a) => a.canvasserId === c.id).length
 	);
 
 	const barData = {
@@ -136,7 +136,7 @@ const Dashboard = () => {
 						display: "flex",
 						flexDirection: { xs: "column", md: "row" },
 						width: "100%",
-						height: "50%",
+						height: "48%",
 						gap: 2,
 					}}
 				>
@@ -151,6 +151,7 @@ const Dashboard = () => {
 								plugins: {
 									legend: { position: "top" },
 								},
+								animation: false,
 							}}
 						/>
 					</Box>
@@ -165,6 +166,7 @@ const Dashboard = () => {
 								plugins: {
 									legend: { position: "top" },
 								},
+								animation: false,
 							}}
 						/>
 					</Box>
@@ -187,6 +189,7 @@ const Dashboard = () => {
 							plugins: {
 								legend: { position: "top" },
 							},
+							animation: false,
 						}}
 					/>
 				</Box>

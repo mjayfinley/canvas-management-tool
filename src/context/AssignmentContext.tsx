@@ -1,17 +1,16 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Canvasser, PolygonUserAssignment } from "../utils/types";
+import { Canvasser, RegionUserAssignment } from "../utils/types";
 
 import { useCanvassersContext } from "../context/CanvassersContext";
 import { generateRandomNumber } from "../utils/helperFunctions";
 import useAssignments from "../hooks/useAssignments";
 
 interface AssignmentContextType {
-	assignments: PolygonUserAssignment[];
-	assignCanvasser: (polygonId: string, userId: string) => void;
-	unassignCanvasser: (polygonId: string, userId: string) => void;
-	getCanvassersForRegion: (polygonId: string) => string[];
-	getCanvassersForRegionFull: (polygonId: string) => Canvasser[];
-	assignmentsError: string | null;
+	assignments: RegionUserAssignment[];
+	assignCanvasser: (regionId: string, canvasserId: string) => void;
+	unassignCanvasser: (regionId: string, canvasserId: string) => void;
+	getCanvassersForRegion: (regionId: string) => string[];
+	getCanvassersForRegionFull: (regionId: string) => Canvasser[];
 	assignmentsLoading: boolean;
 }
 
@@ -27,12 +26,11 @@ export const AssignmentProvider = ({
 	const { canvassers } = useCanvassersContext();
 	const {
 		getAssignments,
-		assignCanvasserToPolygon,
-		removeCanvasserFromPolygon,
+		assignCanvasserToRegion,
+		removeCanvasserFromRegion,
 		assignmentsLoading,
-		assignmentsError,
 	} = useAssignments();
-	const [assignments, setAssignments] = useState<PolygonUserAssignment[]>([]);
+	const [assignments, setAssignments] = useState<RegionUserAssignment[]>([]);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -42,35 +40,40 @@ export const AssignmentProvider = ({
 		fetchData();
 	}, [canvassers]);
 
-	const assignCanvasser = async (polygonId: string, userId: string) => {
-		const newAssignment = { polygonId, userId, id: generateRandomNumber() };
-		await assignCanvasserToPolygon(newAssignment);
+	const assignCanvasser = async (regionId: string, canvasserId: string) => {
+		const newAssignment = {
+			regionId,
+			canvasserId,
+			id: generateRandomNumber(),
+		};
+		await assignCanvasserToRegion(newAssignment);
 		setAssignments((prev) => [...prev, newAssignment]);
 	};
 
-	const unassignCanvasser = async (polygonId: string, userId: string) => {
+	const unassignCanvasser = async (regionId: string, canvasserId: string) => {
 		const found = assignments.find(
-			(a) => a.polygonId === polygonId && a.userId === userId
+			(a) => a.regionId === regionId && a.canvasserId === canvasserId
 		);
 		if (!found) return;
 
-		await removeCanvasserFromPolygon(found.id);
+		await removeCanvasserFromRegion(found.id);
 		setAssignments((prev) =>
 			prev.filter(
-				(a) => !(a.polygonId === polygonId && a.userId === userId)
+				(a) =>
+					!(a.regionId === regionId && a.canvasserId === canvasserId)
 			)
 		);
 	};
 
-	const getCanvassersForRegion = (polygonId: string): string[] => {
+	const getCanvassersForRegion = (regionId: string): string[] => {
 		return assignments
-			.filter((a) => a.polygonId === polygonId)
-			.map((a) => a.userId);
+			.filter((a) => a.regionId === regionId)
+			.map((a) => a.canvasserId);
 	};
 
-	const getCanvassersForRegionFull = (polygonId: string): Canvasser[] => {
-		const userIds = getCanvassersForRegion(polygonId);
-		return canvassers.filter((u) => userIds.includes(u.id));
+	const getCanvassersForRegionFull = (regionId: string): Canvasser[] => {
+		const canvasserIds = getCanvassersForRegion(regionId);
+		return canvassers.filter((u) => canvasserIds.includes(u.id));
 	};
 
 	return (
@@ -82,7 +85,6 @@ export const AssignmentProvider = ({
 				getCanvassersForRegion,
 				getCanvassersForRegionFull,
 				assignmentsLoading,
-				assignmentsError,
 			}}
 		>
 			{children}

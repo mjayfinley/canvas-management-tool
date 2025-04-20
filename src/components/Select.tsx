@@ -1,60 +1,54 @@
 import {
-	FormControl,
-	InputLabel,
-	Select,
-	MenuItem,
-	SelectChangeEvent,
-	FormHelperText,
+	Autocomplete,
+	AutocompleteProps,
+	TextField,
+	Chip,
 } from "@mui/material";
+import { SyntheticEvent } from "react";
 
-interface Option {
+interface CustomAutocompleteProps<T>
+	extends Omit<
+		AutocompleteProps<T, true, true, false>,
+		"onChange" | "renderInput" | "renderTags"
+	> {
 	label: string;
-	value: string;
+	value: T[];
+	onChange: (value: T[]) => void;
+	getOptionLabel: (option: T) => string;
 }
 
-interface CustomSelectProps {
-	name: string;
-	label: string;
-	value: string;
-	onChange: (event: SelectChangeEvent) => void;
-	options: Option[];
-	error?: string;
-	disabled?: boolean;
-}
-
-const CustomSelect = ({
-	name,
+const CustomSelect = <T,>({
 	label,
 	value,
 	onChange,
 	options,
-	error,
-	disabled = false,
-}: CustomSelectProps) => {
+	getOptionLabel,
+	sx,
+	...props
+}: CustomAutocompleteProps<T>) => {
 	return (
-		<FormControl
-			fullWidth
-			margin="normal"
-			error={!!error}
-			disabled={disabled}
-		>
-			<InputLabel id={`${name}-label`}>{label}</InputLabel>
-			<Select
-				labelId={`${name}-label`}
-				id={name}
-				name={name}
-				value={value}
-				label={label}
-				onChange={onChange}
-			>
-				{options.map((option) => (
-					<MenuItem key={option.value} value={option.value}>
-						{option.label}
-					</MenuItem>
-				))}
-			</Select>
-			{error && <FormHelperText>{error}</FormHelperText>}
-		</FormControl>
+		<Autocomplete
+			multiple
+			disableCloseOnSelect
+			options={options}
+			value={value}
+			sx={sx}
+			getOptionLabel={getOptionLabel}
+			onChange={(_event: SyntheticEvent, newValue: T[]) =>
+				onChange(newValue)
+			}
+			renderValue={(selected, getTagProps) =>
+				selected.map((option, index) => (
+					<Chip
+						{...getTagProps({ index })}
+						key={index}
+						label={getOptionLabel(option)}
+					/>
+				))
+			}
+			renderInput={(params) => <TextField {...params} label={label} />}
+			{...props}
+		/>
 	);
 };
 

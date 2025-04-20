@@ -2,8 +2,7 @@ import { useForm, Controller } from "react-hook-form";
 import { Box, Stack, Typography } from "@mui/material";
 import CustomInput from "../../components/Input";
 import CustomButton from "../../components/Button";
-import { Link, useNavigate } from "react-router";
-import useToast from "../../hooks/useToast";
+import { Link } from "react-router";
 import useAuth from "../../hooks/useAuth";
 import AuthLayout from "./AuthLayout";
 
@@ -27,17 +26,9 @@ const RegisterPage = () => {
 	const password = watch("password");
 
 	const { registerUser, loading } = useAuth();
-	const navigate = useNavigate();
-	const showToast = useToast();
 
 	const onSubmit = async (data: RegisterFormInputs) => {
-		try {
-			await registerUser(data);
-			navigate("/login");
-			showToast("Successfully Registered, please login", "success");
-		} catch (err) {
-			showToast("User already exists", "error");
-		}
+		await registerUser(data);
 	};
 
 	return (

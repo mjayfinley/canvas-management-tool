@@ -1,22 +1,21 @@
 import { useState } from "react";
 import { api } from "../utils/constants";
 import { Canvasser } from "../utils/types";
+import useToast from "./useToast";
 
 const useCanvassers = () => {
 	const [canvassersLoading, setLoading] = useState(false);
-	const [canvassersError, setError] = useState<string | null>(null);
+
+	const showToast = useToast();
 
 	const getCanvassers = async (): Promise<Canvasser[]> => {
 		setLoading(true);
-		setError(null);
 
 		try {
 			const res = await api.get("/canvassers");
 			return res.data;
 		} catch (err: any) {
-			setError(
-				err.response?.data?.message || "Canvassers failed to load"
-			);
+			showToast("Failed to get Canvassers", "error");
 			throw err;
 		} finally {
 			setLoading(false);
@@ -27,15 +26,14 @@ const useCanvassers = () => {
 		canvasser: Canvasser
 	): Promise<Canvasser> => {
 		setLoading(true);
-		setError(null);
 
 		try {
 			const res = await api.post("/canvassers", canvasser);
+
+			showToast("Successfully Created Canvasser", "success");
 			return res.data;
 		} catch (err: any) {
-			setError(
-				err.response?.data?.message || "Could not create canvasser"
-			);
+			showToast("Failed to Create Canvasser", "error");
 			throw err;
 		} finally {
 			setLoading(false);
@@ -44,14 +42,12 @@ const useCanvassers = () => {
 
 	const deleteCanvasser = async (id: string) => {
 		setLoading(true);
-		setError(null);
 
 		try {
 			await api.delete(`/canvassers/${id}`);
+			showToast("Successfully Deleted Canvasser", "success");
 		} catch (err: any) {
-			setError(
-				err.response?.data?.message || "Could not delete canvasser"
-			);
+			showToast("Failed to Delete Canvasser", "error");
 			throw err;
 		} finally {
 			setLoading(false);
@@ -63,7 +59,6 @@ const useCanvassers = () => {
 		createCanvasser,
 		deleteCanvasser,
 		canvassersLoading,
-		canvassersError,
 	};
 };
 

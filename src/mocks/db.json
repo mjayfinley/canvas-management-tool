@@ -12,6 +12,13 @@
       "email": "test1@gmail.com",
       "password": "password123",
       "confirmPassword": "password123"
+    },
+    {
+      "id": "bae1",
+      "username": "test2",
+      "email": "test2@g",
+      "password": "password",
+      "confirmPassword": "password"
     }
   ],
   "canvassers": [
@@ -19,9 +26,14 @@
       "id": "1745039973669",
       "name": "Micah",
       "email": "micah@gmail.com"
+    },
+    {
+      "id": "1745110574670",
+      "name": "Matt",
+      "email": "matt@gmail.com"
     }
   ],
-  "polygons": [
+  "regions": [
     {
       "id": "409005119",
       "type": "Feature",
@@ -129,9 +141,19 @@
   ],
   "assignments": [
     {
-      "id": "868263137",
-      "polygonId": "409005119",
-      "userId": "1745039973669"
+      "id": "854960587",
+      "regionId": "767217206",
+      "canvasserId": "1745110574670"
+    },
+    {
+      "id": "506784959",
+      "regionId": "767217206",
+      "canvasserId": "1745039973669"
+    },
+    {
+      "id": "688303825",
+      "regionId": "409005119",
+      "canvasserId": "1745039973669"
     }
   ],
   "canvasserStats": [
@@ -144,6 +166,16 @@
       "followUpsScheduled": 3,
       "surveysCompleted": 2,
       "hoursWorked": 5
+    },
+    {
+      "id": "95d3",
+      "canvasserId": "1745110574670",
+      "callbacks": 4,
+      "doorsKnocked": 94,
+      "conversations": 3,
+      "followUpsScheduled": 1,
+      "surveysCompleted": 16,
+      "hoursWorked": 13
     }
   ]
 }

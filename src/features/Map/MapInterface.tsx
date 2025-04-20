@@ -3,7 +3,7 @@ import { Box, Popover, MenuItem } from "@mui/material";
 import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import centerOfMass from "@turf/center-of-mass";
-import { usePolygonContext } from "../../context/PolygonContext";
+import { useRegionContext } from "../../context/RegionContext";
 
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -18,8 +18,8 @@ const MapInterface = () => {
 	const drawRef = useRef<MapboxDraw | null>(null);
 	const markerRefs = useRef<mapboxgl.Marker[]>([]);
 
-	const { polygons, addPolygon, updateSelectedPolygon, removePolygon } =
-		usePolygonContext();
+	const { regions, addRegion, updateSelectedRegion, removeRegion } =
+		useRegionContext();
 	const { getCanvassersForRegion, getCanvassersForRegionFull } =
 		useAssignmentContext();
 
@@ -27,7 +27,7 @@ const MapInterface = () => {
 	const [popoverPosition, setPopoverPosition] = useState<
 		[number, number] | null
 	>(null);
-	const [selectedPolygonId, setSelectedPolygonId] = useState<string | null>(
+	const [selectedRegionId, setSelectedRegionId] = useState<string | null>(
 		null
 	);
 	const [modalOpen, setModalOpen] = useState(false);
@@ -35,7 +35,7 @@ const MapInterface = () => {
 	const [isEditing, setIsEditing] = useState(false);
 
 	const isEditingRef = useRef(isEditing);
-	const selectedPolygonIdRef = useRef(selectedPolygonId);
+	const selectedRegionIdRef = useRef(selectedRegionId);
 
 	const setUpMap = () => {
 		mapboxgl.accessToken =
@@ -92,7 +92,7 @@ const MapInterface = () => {
 					color: "lightblue",
 				};
 
-				addPolygon(feature);
+				addRegion(feature);
 				if (drawRef.current) {
 					drawRef.current.delete(feature.id.toString());
 					restoreDrawControls(false);
@@ -103,12 +103,12 @@ const MapInterface = () => {
 				const feature: Feature = e.features[0];
 				if (!feature?.id) return;
 
-				updateSelectedPolygon(feature);
+				updateSelectedRegion(feature);
 				if (drawRef.current) {
 					drawRef.current.delete(feature.id.toString());
 					restoreDrawControls(false);
 					setIsEditing(false);
-					setSelectedPolygonId(null);
+					setSelectedRegionId(null);
 				}
 			});
 
@@ -116,12 +116,12 @@ const MapInterface = () => {
 				const feature: Feature = e.features[0];
 				if (!feature?.id) return;
 
-				removePolygon(feature.id.toString());
+				removeRegion(feature.id.toString());
 				if (drawRef.current) {
 					drawRef.current.delete(feature.id.toString());
 					restoreDrawControls(false);
 					setIsEditing(false);
-					setSelectedPolygonId(null);
+					setSelectedRegionId(null);
 				}
 			});
 
@@ -131,7 +131,7 @@ const MapInterface = () => {
 				if (!feature?.id || !drawRef.current || !mapRef.current) return;
 
 				const id = feature.id.toString();
-				setSelectedPolygonId(id);
+				setSelectedRegionId(id);
 
 				const coordinates = e.lngLat as mapboxgl.LngLatLike;
 				const canvas = mapRef.current.getCanvas();
@@ -151,7 +151,7 @@ const MapInterface = () => {
 				if (
 					!mapRef.current ||
 					!isEditingRef.current ||
-					!selectedPolygonIdRef.current
+					!selectedRegionIdRef.current
 				)
 					return;
 
@@ -164,7 +164,7 @@ const MapInterface = () => {
 						drawRef.current.deleteAll();
 						restoreDrawControls(false);
 						setIsEditing(false);
-						setSelectedPolygonId(null);
+						setSelectedRegionId(null);
 						setAnchorEl(null);
 						setPopoverPosition(null);
 					}
@@ -177,7 +177,7 @@ const MapInterface = () => {
 				if (!feature?.id || !drawRef.current || !mapRef.current) return;
 
 				const id = feature.id.toString();
-				setSelectedPolygonId(id);
+				setSelectedRegionId(id);
 
 				const coordinates = e.lngLat as mapboxgl.LngLatLike;
 				const canvas = mapRef.current.getCanvas();
@@ -197,7 +197,7 @@ const MapInterface = () => {
 				if (
 					!mapRef.current ||
 					!isEditingRef.current ||
-					!selectedPolygonIdRef.current
+					!selectedRegionIdRef.current
 				)
 					return;
 
@@ -210,7 +210,7 @@ const MapInterface = () => {
 						drawRef.current.deleteAll();
 						restoreDrawControls(false);
 						setIsEditing(false);
-						setSelectedPolygonId(null);
+						setSelectedRegionId(null);
 						setAnchorEl(null);
 						setPopoverPosition(null);
 					}
@@ -236,8 +236,8 @@ const MapInterface = () => {
 			"polygons"
 		) as mapboxgl.GeoJSONSource;
 
-		if (source && polygons) {
-			const featuresWithId = polygons.map((feature) => {
+		if (source && regions) {
+			const featuresWithId = regions.map((feature) => {
 				const id = feature.id?.toString() ?? generateRandomNumber();
 				const assigned = getCanvassersForRegion(id);
 				const assignedColor =
@@ -317,16 +317,16 @@ const MapInterface = () => {
 
 	const handleEditRegion = (e: MouseEvent<HTMLLIElement>) => {
 		e.stopPropagation();
-		if (!selectedPolygonId || !drawRef.current) return;
+		if (!selectedRegionId || !drawRef.current) return;
 
-		const polygon = polygons.find(
-			(p) => p.id?.toString() === selectedPolygonId
+		const region = regions.find(
+			(p) => p.id?.toString() === selectedRegionId
 		);
-		if (polygon && mapRef.current) {
+		if (region && mapRef.current) {
 			restoreDrawControls(true);
-			drawRef.current?.add(polygon);
+			drawRef.current?.add(region);
 			drawRef.current?.changeMode("simple_select", {
-				featureIds: [selectedPolygonId],
+				featureIds: [selectedRegionId],
 			});
 			setIsEditing(true);
 		}
@@ -350,7 +350,7 @@ const MapInterface = () => {
 	useEffect(() => {
 		updateMap();
 	}, [
-		polygons,
+		regions,
 		mapLoaded,
 		getCanvassersForRegion,
 		getCanvassersForRegionFull,
@@ -358,8 +358,8 @@ const MapInterface = () => {
 
 	useEffect(() => {
 		isEditingRef.current = isEditing;
-		selectedPolygonIdRef.current = selectedPolygonId;
-	}, [isEditing, selectedPolygonId]);
+		selectedRegionIdRef.current = selectedRegionId;
+	}, [isEditing, selectedRegionId]);
 
 	return (
 		<>
@@ -387,7 +387,7 @@ const MapInterface = () => {
 			<AssignCanvasserModal
 				open={modalOpen}
 				onClose={() => setModalOpen(false)}
-				polygonId={selectedPolygonId}
+				regionId={selectedRegionId}
 			/>
 		</>
 	);

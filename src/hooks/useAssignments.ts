@@ -1,58 +1,51 @@
-import { PolygonUserAssignment } from "../utils/types";
+import { RegionUserAssignment } from "../utils/types";
 import { api } from "../utils/constants";
 import { useState } from "react";
+import useToast from "./useToast";
 
 const useAssignments = () => {
 	const [assignmentsLoading, setLoading] = useState(false);
-	const [assignmentsError, setError] = useState<string | null>(null);
 
-	const getAssignments = async (): Promise<PolygonUserAssignment[]> => {
+	const showToast = useToast();
+
+	const getAssignments = async (): Promise<RegionUserAssignment[]> => {
 		setLoading(true);
-		setError(null);
 
 		try {
 			const res = await api.get("/assignments");
 			return res.data;
 		} catch (err: any) {
-			setError(
-				err.response?.data?.message || "Assignments failed to load"
-			);
+			showToast("Failed to get Region Assignments", "error");
 			throw err;
 		} finally {
 			setLoading(false);
 		}
 	};
 
-	const assignCanvasserToPolygon = async (
-		assignment: PolygonUserAssignment
+	const assignCanvasserToRegion = async (
+		assignment: RegionUserAssignment
 	) => {
 		setLoading(true);
-		setError(null);
 
 		try {
 			await api.post("/assignments", assignment);
+			showToast("Successfully Assigned Canvassser to Region", "success");
 		} catch (err: any) {
-			setError(
-				err.response?.data?.message ||
-					"Failed to assign Canvasser to Region"
-			);
+			showToast("Failed to assign Canvasser to Region", "error");
 			throw err;
 		} finally {
 			setLoading(false);
 		}
 	};
 
-	const removeCanvasserFromPolygon = async (assignmentId: string) => {
+	const removeCanvasserFromRegion = async (assignmentId: string) => {
 		setLoading(true);
-		setError(null);
 
 		try {
 			await api.delete(`/assignments/${assignmentId}`);
+			showToast("Successfully Removed Canvassser from Region", "success");
 		} catch (err: any) {
-			setError(
-				err.response?.data?.message ||
-					"Failed to delete Canvasser from Region"
-			);
+			showToast("Failed to delete Canvasser to Region", "error");
 			throw err;
 		} finally {
 			setLoading(false);
@@ -61,10 +54,9 @@ const useAssignments = () => {
 
 	return {
 		getAssignments,
-		assignCanvasserToPolygon,
-		removeCanvasserFromPolygon,
+		assignCanvasserToRegion,
+		removeCanvasserFromRegion,
 		assignmentsLoading,
-		assignmentsError,
 	};
 };
 

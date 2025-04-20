@@ -3,9 +3,8 @@ import { Box, Stack, Typography } from "@mui/material";
 import CustomInput from "../../components/Input";
 import CustomButton from "../../components/Button";
 import useAuth from "../../hooks/useAuth";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import AuthLayout from "./AuthLayout";
-import useToast from "../../hooks/useToast";
 
 interface LoginFormInputs {
 	username: string;
@@ -20,17 +19,11 @@ const LoginPage = () => {
 	} = useForm<LoginFormInputs>();
 
 	const { loginUser, loading } = useAuth();
-	const navigate = useNavigate();
-	const showToast = useToast();
 
 	const onSubmit = async (data: LoginFormInputs) => {
 		try {
 			await loginUser(data);
-			navigate("/map");
-			showToast("Successfully Logged In", "success");
-		} catch (err) {
-			showToast("Error Logging In", "error");
-		}
+		} catch (err) {}
 	};
 
 	return (

@@ -1,6 +1,6 @@
-export interface PolygonUserAssignment {
-	polygonId: string;
-	userId: string;
+export interface RegionUserAssignment {
+	regionId: string;
+	canvasserId: string;
 	id: string;
 }
 

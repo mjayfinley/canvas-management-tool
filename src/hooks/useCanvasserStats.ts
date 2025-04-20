@@ -1,20 +1,21 @@
 import { useState } from "react";
 import { api } from "../utils/constants";
 import { CanvasserStat } from "../utils/types";
+import useToast from "./useToast";
 
 const useCanvasserStats = () => {
 	const [statsLoading, setLoading] = useState(false);
-	const [statsError, setError] = useState<string | null>(null);
+
+	const showToast = useToast();
 
 	const getStats = async (): Promise<CanvasserStat[]> => {
 		setLoading(true);
-		setError(null);
 
 		try {
 			const res = await api.get("/canvasserStats");
 			return res.data;
 		} catch (err: any) {
-			setError(err.response?.data?.message || "Stats failed to load");
+			showToast("Failed to Load Stats", "error");
 			throw err;
 		} finally {
 			setLoading(false);
@@ -23,13 +24,12 @@ const useCanvasserStats = () => {
 
 	const createStat = async (stat: CanvasserStat): Promise<CanvasserStat> => {
 		setLoading(true);
-		setError(null);
 
 		try {
 			const res = await api.post("/canvasserStats", stat);
 			return res.data;
 		} catch (err: any) {
-			setError(err.response?.data?.message || "Failed to create stats");
+			showToast("Failed to Create Stats", "error");
 			throw err;
 		} finally {
 			setLoading(false);
@@ -40,7 +40,6 @@ const useCanvasserStats = () => {
 		canvasserId: string
 	): Promise<void> => {
 		setLoading(true);
-		setError(null);
 
 		try {
 			const res = await api.get(
@@ -51,10 +50,7 @@ const useCanvasserStats = () => {
 				await api.delete(`/canvasserStats/${entry.id}`);
 			}
 		} catch (err: any) {
-			setError(
-				err.response?.data?.message ||
-					"Failed to delete canvasser stats"
-			);
+			showToast("Failed to Delete Canvasser Stats", "error");
 			throw err;
 		} finally {
 			setLoading(false);
@@ -66,7 +62,6 @@ const useCanvasserStats = () => {
 		createStat,
 		deleteStatByCanvasserId,
 		statsLoading,
-		statsError,
 	};
 };
 

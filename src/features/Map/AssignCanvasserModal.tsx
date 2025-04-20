@@ -1,16 +1,16 @@
-import { Autocomplete, TextField, Chip } from "@mui/material";
 import { useAssignmentContext } from "../../context/AssignmentContext";
 import { useCanvassersContext } from "../../context/CanvassersContext";
 import { useState, useEffect } from "react";
 import CustomModal from "../../components/Modal";
+import CustomSelect from "../../components/Select";
 
 interface Props {
 	open: boolean;
 	onClose: () => void;
-	polygonId: string | null;
+	regionId: string | null;
 }
 
-const AssignCanvasserModal = ({ open, onClose, polygonId }: Props) => {
+const AssignCanvasserModal = ({ open, onClose, regionId }: Props) => {
 	const { canvassers } = useCanvassersContext();
 	const { getCanvassersForRegion, assignCanvasser, unassignCanvasser } =
 		useAssignmentContext();
@@ -18,21 +18,21 @@ const AssignCanvasserModal = ({ open, onClose, polygonId }: Props) => {
 	const [selected, setSelected] = useState<string[]>([]);
 
 	useEffect(() => {
-		if (polygonId) {
-			setSelected(getCanvassersForRegion(polygonId));
+		if (regionId) {
+			setSelected(getCanvassersForRegion(regionId));
 		}
-	}, [polygonId]);
+	}, [regionId]);
 
 	const handleSave = async () => {
-		if (!polygonId) return;
+		if (!regionId) return;
 
-		const current = getCanvassersForRegion(polygonId);
+		const current = getCanvassersForRegion(regionId);
 		const toAdd = selected.filter((id) => !current.includes(id));
 		const toRemove = current.filter((id) => !selected.includes(id));
 
-		await Promise.all(toAdd.map((id) => assignCanvasser(polygonId, id)));
+		await Promise.all(toAdd.map((id) => assignCanvasser(regionId, id)));
 		await Promise.all(
-			toRemove.map((id) => unassignCanvasser(polygonId, id))
+			toRemove.map((id) => unassignCanvasser(regionId, id))
 		);
 
 		onClose();
@@ -44,27 +44,15 @@ const AssignCanvasserModal = ({ open, onClose, polygonId }: Props) => {
 			onClose={onClose}
 			title="Assign Canvassers"
 			content={
-				<Autocomplete
-					sx={{ height: "60px" }}
-					multiple
+				<CustomSelect
+					label="Canvassers"
 					options={canvassers}
-					getOptionLabel={(option) => option.name}
+					sx={{ pt: 1 }}
 					value={canvassers.filter((c) => selected.includes(c.id))}
-					onChange={(_, newVal) =>
-						setSelected(newVal.map((v) => v.id))
+					onChange={(newSelected) =>
+						setSelected(newSelected.map((v) => v.id))
 					}
-					renderValue={(value, getTagProps) =>
-						value.map((option, index) => (
-							<Chip
-								label={option.name}
-								{...getTagProps({ index })}
-								key={option.id}
-							/>
-						))
-					}
-					renderInput={(params) => (
-						<TextField {...params} placeholder="Canvassers" />
-					)}
+					getOptionLabel={(option) => option.name}
 				/>
 			}
 			onConfirm={handleSave}

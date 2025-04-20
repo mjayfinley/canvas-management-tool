@@ -9,7 +9,6 @@ interface CanvasserStatsContextType {
 	addStat: (canvasserId: string) => void;
 	removeStat: (canvasserId: string) => void;
 	statsLoading: boolean;
-	statsError: string | null;
 }
 
 const CanvasserStatsContext = createContext<
@@ -21,13 +20,8 @@ export const CanvasserStatsProvider = ({
 }: {
 	children: React.ReactNode;
 }) => {
-	const {
-		getStats,
-		createStat,
-		deleteStatByCanvasserId,
-		statsLoading,
-		statsError,
-	} = useCanvasserStats();
+	const { getStats, createStat, deleteStatByCanvasserId, statsLoading } =
+		useCanvasserStats();
 	const [stats, setStats] = useState<CanvasserStat[]>([]);
 
 	const fetchStats = async () => {
@@ -60,7 +54,6 @@ export const CanvasserStatsProvider = ({
 				addStat,
 				removeStat,
 				statsLoading,
-				statsError,
 			}}
 		>
 			{children}

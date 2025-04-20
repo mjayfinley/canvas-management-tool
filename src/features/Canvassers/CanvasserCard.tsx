@@ -25,7 +25,7 @@ const CanvasserCard = ({
 
 	useEffect(() => {
 		const assignedRegions = assignments.filter(
-			(a) => a.userId === canvasser.id
+			(a) => a.canvasserId === canvasser.id
 		);
 		setNumberOfAssignments(assignedRegions.length);
 	}, [assignments]);

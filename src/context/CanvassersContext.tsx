@@ -7,7 +7,6 @@ import useAssignments from "../hooks/useAssignments";
 interface CanvassersContextType {
 	canvassers: Canvasser[];
 	canvassersLoading: boolean;
-	canvassersError: string | null;
 	addCanvasser: (canvasser: Canvasser) => Promise<void>;
 	removeCanvasser: (id: string) => Promise<void>;
 	refetchCanvassers: () => Promise<void>;
@@ -27,10 +26,9 @@ export const CanvassersProvider = ({
 		getCanvassers,
 		createCanvasser,
 		deleteCanvasser,
-		canvassersError,
 		canvassersLoading,
 	} = useCanvassers();
-	const { getAssignments, removeCanvasserFromPolygon } = useAssignments();
+	const { getAssignments, removeCanvasserFromRegion } = useAssignments();
 	const [canvassers, setCanvassers] = useState<Canvasser[]>([]);
 
 	const refetchCanvassers = async () => {
@@ -48,11 +46,11 @@ export const CanvassersProvider = ({
 		const assignmentData = await getAssignments();
 		await deleteCanvasser(id);
 		const canvaserAssignments = assignmentData.filter(
-			(a) => a.userId === id
+			(a) => a.canvasserId === id
 		);
 
 		await canvaserAssignments.forEach((assignment) => {
-			removeCanvasserFromPolygon(assignment.id);
+			removeCanvasserFromRegion(assignment.id);
 		});
 		removeStat(id);
 		setCanvassers((prev) => prev.filter((u) => u.id !== id));
@@ -70,7 +68,6 @@ export const CanvassersProvider = ({
 				removeCanvasser,
 				refetchCanvassers,
 				canvassersLoading,
-				canvassersError,
 			}}
 		>
 			{children}

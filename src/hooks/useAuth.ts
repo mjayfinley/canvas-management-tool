@@ -2,6 +2,8 @@ import { useState } from "react";
 import { api } from "../utils/constants";
 import { filter, isEmpty, matches } from "lodash-es";
 import { useAuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router";
+import useToast from "./useToast";
 
 export interface LoginFormData {
 	username: string;
@@ -16,19 +18,21 @@ export interface RegisterFormData {
 
 const useAuth = () => {
 	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
 
 	const { login: saveToken, logout } = useAuthContext();
+	const navigate = useNavigate();
+	const showToast = useToast();
 
 	const registerUser = async (formData: RegisterFormData) => {
 		setLoading(true);
-		setError(null);
 
 		try {
 			const response = await api.post("/users", formData);
+			navigate("/login");
+			showToast("Successfully Registered, please login", "success");
 			return response.data;
 		} catch (err: any) {
-			setError(err.response?.data?.message || "Registration failed");
+			showToast("Registration failed", "error");
 			throw err;
 		} finally {
 			setLoading(false);
@@ -37,7 +41,6 @@ const useAuth = () => {
 
 	const loginUser = async (formData: LoginFormData) => {
 		setLoading(true);
-		setError(null);
 
 		try {
 			const response = await api.get("/users");
@@ -47,14 +50,15 @@ const useAuth = () => {
 			if (!isEmpty(user)) {
 				const token = user[0].id;
 				saveToken(token);
+				navigate("/map");
+				showToast("Successfully Logged In", "success");
 			} else {
-				setError("Login failed");
-				throw new Error("Login failed");
+				throw new Error();
 			}
 
 			return;
 		} catch (err: any) {
-			setError(err.response?.data?.message || "Login failed");
+			showToast("Error Logging In", "error");
 			throw err;
 		} finally {
 			setLoading(false);
@@ -65,7 +69,7 @@ const useAuth = () => {
 		logout();
 	};
 
-	return { registerUser, loginUser, logoutUser, loading, error };
+	return { registerUser, loginUser, logoutUser, loading };
 };
 
 export default useAuth;
