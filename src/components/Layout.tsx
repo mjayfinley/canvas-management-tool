@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { ReactNode, useState } from "react";
 import {
 	Box,
 	Toolbar,
@@ -21,7 +21,7 @@ import { useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
 
 interface LayoutProps {
-	children: React.ReactNode;
+	children: ReactNode;
 }
 
 const drawerWidth = 240;

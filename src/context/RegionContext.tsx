@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import {
+	createContext,
+	ReactNode,
+	useContext,
+	useEffect,
+	useState,
+} from "react";
 
 import { Feature } from "geojson";
 import useAssignments from "../hooks/useAssignments";
@@ -14,7 +20,7 @@ interface RegionContextType {
 
 const RegionContext = createContext<RegionContextType | undefined>(undefined);
 
-export const RegionProvider = ({ children }: { children: React.ReactNode }) => {
+export const RegionProvider = ({ children }: { children: ReactNode }) => {
 	const { getAssignments, removeCanvasserFromRegion } = useAssignments();
 	const {
 		getRegions,

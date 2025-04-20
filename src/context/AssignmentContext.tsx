@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import {
+	createContext,
+	ReactNode,
+	useContext,
+	useEffect,
+	useState,
+} from "react";
 import { Canvasser, RegionUserAssignment } from "../utils/types";
 
 import { useCanvassersContext } from "../context/CanvassersContext";
@@ -18,11 +24,7 @@ const AssignmentContext = createContext<AssignmentContextType | undefined>(
 	undefined
 );
 
-export const AssignmentProvider = ({
-	children,
-}: {
-	children: React.ReactNode;
-}) => {
+export const AssignmentProvider = ({ children }: { children: ReactNode }) => {
 	const { canvassers } = useCanvassersContext();
 	const {
 		getAssignments,

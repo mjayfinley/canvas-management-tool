@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 import { Canvasser } from "../utils/types";
 
 interface CanvasserContextType {
@@ -10,11 +10,7 @@ const CanvasserContext = createContext<CanvasserContextType | undefined>(
 	undefined
 );
 
-export const CanvasserProvider = ({
-	children,
-}: {
-	children: React.ReactNode;
-}) => {
+export const CanvasserProvider = ({ children }: { children: ReactNode }) => {
 	const [selectedCanvasser, setSelectedCanvasser] =
 		useState<Canvasser | null>(null);
 

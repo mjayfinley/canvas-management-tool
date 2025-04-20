@@ -1,10 +1,10 @@
-import React from "react";
+import { ChangeEvent } from "react";
 import { TextField, TextFieldProps } from "@mui/material";
 
 type CustomInputProps = {
 	label: string;
 	value: string;
-	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 	customError?: string;
 } & TextFieldProps;
 

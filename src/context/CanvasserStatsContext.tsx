@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+	createContext,
+	ReactNode,
+	useContext,
+	useEffect,
+	useState,
+} from "react";
 import { CanvasserStat } from "../utils/types";
 import { createMockStat } from "../utils/helperFunctions";
 import useCanvasserStats from "../hooks/useCanvasserStats";
@@ -18,7 +24,7 @@ const CanvasserStatsContext = createContext<
 export const CanvasserStatsProvider = ({
 	children,
 }: {
-	children: React.ReactNode;
+	children: ReactNode;
 }) => {
 	const { getStats, createStat, deleteStatByCanvasserId, statsLoading } =
 		useCanvasserStats();

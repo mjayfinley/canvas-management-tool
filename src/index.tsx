@@ -1,30 +1,18 @@
+"use client";
+
 import { createRoot } from "react-dom/client";
-import { AuthProvider } from "./context/AuthContext.tsx";
-import { ToastProvider } from "./context/ToastContext.tsx";
-import { ThemeProvider } from "./context/ThemeContext.tsx";
-import { CanvassersProvider } from "./context/CanvassersContext.tsx";
+import { ErrorBoundary } from "react-error-boundary";
+import { Box } from "@mui/material";
 import App from "./app.tsx";
-import { RegionProvider } from "./context/RegionContext.tsx";
-import { AssignmentProvider } from "./context/AssignmentContext.tsx";
-import { CanvasserProvider } from "./context/CanvasserContext.tsx";
-import { CanvasserStatsProvider } from "./context/CanvasserStatsContext.tsx";
+
+import AppProviders from "./context/AppProviders.tsx";
 
 createRoot(document.getElementById("root")!).render(
-	<AuthProvider>
-		<ToastProvider>
-			<ThemeProvider>
-				<CanvasserStatsProvider>
-					<CanvassersProvider>
-						<RegionProvider>
-							<AssignmentProvider>
-								<CanvasserProvider>
-									<App />
-								</CanvasserProvider>
-							</AssignmentProvider>
-						</RegionProvider>
-					</CanvassersProvider>
-				</CanvasserStatsProvider>
-			</ThemeProvider>
-		</ToastProvider>
-	</AuthProvider>
+	<AppProviders>
+		<ErrorBoundary
+			fallback={<Box>Something went wrong, please refresh.</Box>}
+		>
+			<App />
+		</ErrorBoundary>
+	</AppProviders>
 );
