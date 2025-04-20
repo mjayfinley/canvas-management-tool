@@ -54,7 +54,7 @@ const Layout = ({ children }: LayoutProps) => {
 		<Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
 			<Toolbar>
 				<Typography variant="h6" noWrap>
-					Canvasy
+					CanvasPro
 				</Typography>
 			</Toolbar>
 			<Divider />
@@ -110,7 +110,7 @@ const Layout = ({ children }: LayoutProps) => {
 							</IconButton>
 						)}
 						<Typography variant="h6" noWrap>
-							Canvasy
+							CanvasPro
 						</Typography>
 					</Box>
 

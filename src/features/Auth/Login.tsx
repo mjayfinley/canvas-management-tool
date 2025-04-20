@@ -1,9 +1,10 @@
 import { useForm, Controller } from "react-hook-form";
-import { Box, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import CustomInput from "../../components/Input";
 import CustomButton from "../../components/Button";
 import useAuth from "../../hooks/useAuth";
 import { Link, useNavigate } from "react-router";
+import AuthLayout from "./AuthLayout";
 import useToast from "../../hooks/useToast";
 
 interface LoginFormInputs {
@@ -33,61 +34,59 @@ const LoginPage = () => {
 	};
 
 	return (
-		<Box
-			display="flex"
-			justifyContent="center"
-			alignItems="center"
-			minHeight="100vh"
-			bgcolor="#f5f5f5"
-		>
+		<AuthLayout>
 			<Box
 				component="form"
 				onSubmit={handleSubmit(onSubmit)}
 				p={4}
 				bgcolor="white"
-				borderRadius={2}
-				boxShadow={3}
-				width={350}
+				borderRadius={3}
+				boxShadow={4}
+				width="100%"
+				maxWidth={400}
 			>
-				<Typography variant="h5" textAlign="center" mb={2}>
+				<Typography variant="h4" textAlign="center" gutterBottom>
 					Login
 				</Typography>
-				<Controller
-					name="username"
-					control={control}
-					defaultValue=""
-					rules={{ required: true }}
-					render={({ field }) => (
-						<CustomInput label="Username" {...field} />
-					)}
-				/>
-				<Controller
-					name="password"
-					control={control}
-					defaultValue=""
-					rules={{ required: true }}
-					render={({ field }) => (
-						<CustomInput
-							label="Password"
-							type="password"
-							{...field}
-						/>
-					)}
-				/>
-				<CustomButton
-					label="Login"
-					type="submit"
-					disabled={!isValid || loading}
-					loading={loading}
-					sx={{ mt: 2 }}
-				/>
-				<Link to="/register">
-					<Typography variant="body1" textAlign="center" mt={2}>
-						New user? Click to Register
+
+				<Stack spacing={2}>
+					<Controller
+						name="username"
+						control={control}
+						defaultValue=""
+						rules={{ required: true }}
+						render={({ field }) => (
+							<CustomInput label="Username" {...field} />
+						)}
+					/>
+
+					<Controller
+						name="password"
+						control={control}
+						defaultValue=""
+						rules={{ required: true }}
+						render={({ field }) => (
+							<CustomInput
+								label="Password"
+								type="password"
+								{...field}
+							/>
+						)}
+					/>
+
+					<CustomButton
+						label="Login"
+						type="submit"
+						disabled={!isValid || loading}
+						loading={loading}
+					/>
+
+					<Typography variant="body2" textAlign="center">
+						New user? <Link to="/register">Register here</Link>
 					</Typography>
-				</Link>
+				</Stack>
 			</Box>
-		</Box>
+		</AuthLayout>
 	);
 };
 
