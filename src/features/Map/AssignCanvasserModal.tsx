@@ -52,7 +52,9 @@ const AssignCanvasserModal = ({ open, onClose, regionId }: Props) => {
 					onChange={(newSelected) =>
 						setSelected(newSelected.map((v) => v.id))
 					}
-					getOptionLabel={(option) => option.name}
+					getOptionLabel={(option) =>
+						`${option.firstName} ${option.lastName}`
+					}
 				/>
 			}
 			onConfirm={handleSave}

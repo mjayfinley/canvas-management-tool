@@ -6,7 +6,8 @@ export interface RegionUserAssignment {
 
 export interface Canvasser {
 	id: string;
-	name: string;
+	firstName: string;
+	lastName: string;
 	email: string;
 }
 

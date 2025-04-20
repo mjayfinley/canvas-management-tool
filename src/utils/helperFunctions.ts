@@ -47,3 +47,16 @@ export const createMockStat = (canvasserId: string): CanvasserStat => ({
 	surveysCompleted: Math.floor(Math.random() * 50),
 	hoursWorked: Math.floor(Math.random() * 20),
 });
+
+export const getFirstInitial = (name: string) => {
+	return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+};
+
+export const stringToColor = (str: string) => {
+	let hash = 0;
+	for (let i = 0; i < str.length; i++) {
+		hash = str.charCodeAt(i) + ((hash << 5) - hash);
+	}
+	const hue = hash % 360;
+	return `hsl(${hue}, 70%, 60%)`;
+};

@@ -1,159 +1,97 @@
 import { useState } from "react";
 import {
-	Box,
-	Typography,
-	CircularProgress,
 	Drawer,
 	IconButton,
 	useTheme,
 	useMediaQuery,
 	Paper,
 } from "@mui/material";
-import CustomInput from "../../components/Input";
+
 import { useCanvassersContext } from "../../context/CanvassersContext";
-import CanvasserCard from "./CanvasserCard";
 
-import { Add, Close, PeopleAlt } from "@mui/icons-material";
-import CustomModal from "../../components/Modal";
-
-interface Canvassers {
-	id: string;
-	name: string;
-	email: string;
-}
+import { PeopleAlt } from "@mui/icons-material";
+import { getFirstInitial } from "../../utils/helperFunctions";
+import AddCanvasser from "./AddCanvasser";
+import CanvasserPanel from "./CanvasserPanel";
 
 const Canvassers = () => {
 	const { canvassers, canvassersLoading, addCanvasser, removeCanvasser } =
 		useCanvassersContext();
-	const [open, setOpen] = useState(false);
-	const [newName, setName] = useState("");
-	const [newEmail, setEmail] = useState("");
+	const [drawerOpen, setDrawerOpen] = useState(false);
+	const [newCanvasser, setNewCanvasser] = useState({
+		firstName: "",
+		lastName: "",
+		email: "",
+	});
+
 	const [modalOpen, setModalOpen] = useState(false);
 
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
 	const handleAddCanvasser = async () => {
-		const newCanvasser = {
+		const formattedCanvasser = {
 			id: Date.now().toString(),
-			name:
-				newName.charAt(0).toUpperCase() +
-				newName.slice(1).toLowerCase(),
-			email: newEmail,
+			firstName: getFirstInitial(newCanvasser.firstName),
+			lastName: getFirstInitial(newCanvasser.lastName),
+			email: newCanvasser.email,
 		};
-		await addCanvasser(newCanvasser);
-		setName("");
-		setEmail("");
-
+		await addCanvasser(formattedCanvasser);
+		setNewCanvasser({ firstName: "", lastName: "", email: "" });
 		setModalOpen(false);
 	};
 
 	const handleCancelAddCanvasser = () => {
-		setName("");
-		setEmail("");
+		setNewCanvasser({ firstName: "", lastName: "", email: "" });
 		setModalOpen(false);
 	};
 
-	const handleSetCanvasserManagementOpen = (open: boolean) => {
-		setOpen(open);
+	const handleAddCanvasserModal = () => {
+		setModalOpen((prev) => !prev);
 	};
 
-	const renderPanelContent = (
-		<Box
-			sx={(theme) => ({
-				p: 3,
-				width: isMobile ? 360 : 300,
-				maxHeight: "100%",
-				overflowY: "auto",
-				"&::-webkit-scrollbar": {
-					width: "0.4em",
-				},
-				"&::-webkit-scrollbar-track": {
-					boxShadow: "inset 0 0 6px rgba(0,0,0,0.00)",
-					webkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.00)",
-				},
-				"&::-webkit-scrollbar-thumb": {
-					backgroundColor:
-						theme.palette.mode === "dark" ? "lightblue" : "#1976d2",
-				},
-			})}
-		>
-			<Box
-				display="flex"
-				alignItems="center"
-				justifyContent="space-between"
-				mb={1}
-			>
-				<Typography variant="h6">Canvassers</Typography>
-
-				<IconButton color="success" onClick={() => setModalOpen(true)}>
-					<Add />
-				</IconButton>
-
-				{isMobile && (
-					<IconButton
-						onClick={() => handleSetCanvasserManagementOpen(false)}
-					>
-						<Close />
-					</IconButton>
-				)}
-			</Box>
-
-			{canvassersLoading ? (
-				<Box textAlign="center" mt={4}>
-					<CircularProgress />
-				</Box>
-			) : canvassers.length === 0 ? (
-				<Typography variant="body2" color="text.secondary">
-					No Canvassers added yet.
-				</Typography>
-			) : (
-				<Box>
-					{canvassers.map((canvasser) => (
-						<CanvasserCard
-							key={canvasser.id}
-							canvasser={canvasser}
-							onDelete={removeCanvasser}
-							setOpen={handleSetCanvasserManagementOpen}
-						/>
-					))}
-				</Box>
-			)}
-		</Box>
-	);
+	const handleSetCanvasserManagementOpen = () => {
+		setDrawerOpen((prev) => !prev);
+	};
 
 	return (
 		<>
-			{isMobile && (
-				<IconButton
-					color="inherit"
-					onClick={() => handleSetCanvasserManagementOpen(true)}
-					disableRipple
-					sx={{
-						position: "absolute",
-						alignSelf: "flex-start",
-						bottom: "25px",
-						left: "25px",
-						color: "black",
-						zIndex: 1000,
-						border: "1px solid rgba(0, 0, 0, 0.2)", // faint outline
-						boxShadow: "0 1px 4px rgba(0, 0, 0, 0.1)", // subtle shadow
-						borderRadius: 1, // square shape (0 = sharp, 1 = slight rounding)
-						backgroundColor: "#fff", // optional: helps shadow show up better
-					}}
-				>
-					<PeopleAlt />
-				</IconButton>
-			)}
-
 			{isMobile ? (
-				<Drawer
-					anchor="left"
-					open={open}
-					onClose={() => handleSetCanvasserManagementOpen(false)}
-				>
-					{renderPanelContent}
-				</Drawer>
+				<>
+					<IconButton
+						color="inherit"
+						onClick={() => handleSetCanvasserManagementOpen()}
+						disableRipple
+						sx={{
+							position: "absolute",
+							alignSelf: "flex-start",
+							bottom: "25px",
+							left: "25px",
+							color: "black",
+							zIndex: 1000,
+							border: "1px solid rgba(0, 0, 0, 0.2)", // faint outline
+							boxShadow: "0 1px 4px rgba(0, 0, 0, 0.1)", // subtle shadow
+							borderRadius: 1, // square shape (0 = sharp, 1 = slight rounding)
+							backgroundColor: "#fff", // optional: helps shadow show up better
+						}}
+					>
+						<PeopleAlt />
+					</IconButton>
+					<Drawer
+						anchor="left"
+						open={drawerOpen}
+						onClose={() => handleSetCanvasserManagementOpen()}
+					>
+						<CanvasserPanel
+							canvassers={canvassers}
+							canvassersLoading={canvassersLoading}
+							handleAddCanvasserModal={handleAddCanvasserModal}
+							onDelete={removeCanvasser}
+							setOpen={handleSetCanvasserManagementOpen}
+							isMobile={isMobile}
+						/>
+					</Drawer>
+				</>
 			) : (
 				<Paper
 					sx={{
@@ -162,30 +100,23 @@ const Canvassers = () => {
 						flexShrink: 0,
 					}}
 				>
-					{renderPanelContent}
+					<CanvasserPanel
+						canvassers={canvassers}
+						canvassersLoading={canvassersLoading}
+						handleAddCanvasserModal={handleAddCanvasserModal}
+						onDelete={removeCanvasser}
+						setOpen={handleSetCanvasserManagementOpen}
+						isMobile={isMobile}
+					/>
 				</Paper>
 			)}
-			<CustomModal
+
+			<AddCanvasser
 				open={modalOpen}
-				onClose={handleCancelAddCanvasser}
-				title="Add New Canvasser"
-				content={
-					<>
-						<CustomInput
-							label="Name"
-							value={newName}
-							onChange={(e) => setName(e.target.value)}
-						/>
-						<CustomInput
-							label="Email"
-							value={newEmail}
-							onChange={(e) => setEmail(e.target.value)}
-						/>
-					</>
-				}
+				newCanvasser={newCanvasser}
+				setNewCanvasser={setNewCanvasser}
 				onConfirm={handleAddCanvasser}
-				confirmDisabled={!newName || !newEmail}
-				confirmText="Add"
+				onClose={handleCancelAddCanvasser}
 			/>
 		</>
 	);

@@ -4,13 +4,17 @@ import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import centerOfMass from "@turf/center-of-mass";
 import { useRegionContext } from "../../context/RegionContext";
+import { Feature } from "geojson";
+import {
+	generateRandomNumber,
+	getFirstInitial,
+	stringToColor,
+} from "../../utils/helperFunctions";
+import AssignCanvasserModal from "./AssignCanvasserModal";
+import { useAssignmentContext } from "../../context/AssignmentContext";
 
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { Feature } from "geojson";
-import { generateRandomNumber } from "../../utils/helperFunctions";
-import AssignCanvasserModal from "./AssignCanvasserModal";
-import { useAssignmentContext } from "../../context/AssignmentContext";
 
 const MapInterface = () => {
 	const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -274,7 +278,7 @@ const MapInterface = () => {
 					const offsetLat = center[1] + radius * Math.sin(angle);
 
 					const el = document.createElement("div");
-					el.style.background = "#007bff";
+					el.style.background = stringToColor(user.firstName);
 					el.style.color = "#fff";
 					el.style.borderRadius = "50%";
 					el.style.width = "30px";
@@ -285,7 +289,10 @@ const MapInterface = () => {
 					el.style.fontWeight = "bold";
 					el.style.fontSize = "14px";
 					el.style.boxShadow = "0 0 4px rgba(0,0,0,0.3)";
-					el.innerText = user.name.charAt(0).toUpperCase();
+					el.title = `${user.firstName} ${user.lastName}`;
+					el.innerText = `${getFirstInitial(
+						user.firstName
+					)}${getFirstInitial(user.lastName)}`;
 
 					const marker = new mapboxgl.Marker({ element: el })
 						.setLngLat([offsetLng, offsetLat])

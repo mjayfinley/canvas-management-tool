@@ -10,7 +10,7 @@ import { useCanvasserContext } from "../../context/CanvasserContext";
 interface CanvasserCardProps {
 	canvasser: Canvasser;
 	onDelete: (id: string) => void;
-	setOpen: (open: boolean) => void;
+	setOpen: () => void;
 }
 
 const CanvasserCard = ({
@@ -32,13 +32,13 @@ const CanvasserCard = ({
 
 	const handleSelectCanvasser = () => {
 		setSelectedCanvasser(canvasser);
-		setOpen(false);
+		setOpen();
 		navigate("/dashboard");
 	};
 
 	return (
 		<CustomCard
-			title={canvasser.name}
+			title={`${canvasser.firstName} ${canvasser.lastName}`}
 			description={canvasser.email}
 			content={`Regions: ${numberOfAssignments}`}
 			onClick={handleSelectCanvasser}

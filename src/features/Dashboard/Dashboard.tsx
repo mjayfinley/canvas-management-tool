@@ -47,7 +47,7 @@ const Dashboard = () => {
 	);
 
 	const barData = {
-		labels: canvassers.map((c) => c.name),
+		labels: canvassers.map((c) => c.firstName),
 		datasets: [
 			{
 				label: "Regions Assigned",
@@ -58,7 +58,7 @@ const Dashboard = () => {
 	};
 
 	const pieData = {
-		labels: canvassers.map((c) => c.name),
+		labels: canvassers.map((c) => c.firstName),
 		datasets: [
 			{
 				label: "Assignments",
@@ -69,7 +69,7 @@ const Dashboard = () => {
 	};
 
 	const callBackChartData = {
-		labels: selectedCanvasser ? [selectedCanvasser.name] : [""],
+		labels: selectedCanvasser ? [selectedCanvasser.firstName] : [""],
 		datasets: [
 			{
 				label: "Doors Knocked",
@@ -121,7 +121,7 @@ const Dashboard = () => {
 				<Typography variant="h4">
 					{!selectedCanvasser
 						? "All Canvasser's Data"
-						: `${selectedCanvasser.name}'s Data`}
+						: `${selectedCanvasser.firstName} ${selectedCanvasser.lastName}'s Data`}
 				</Typography>
 				{selectedCanvasser && (
 					<CustomButton
