@@ -44,6 +44,7 @@ const Dashboard = () => {
 	const { canvassers } = useCanvassersContext();
 
 	const [canvasser, setCanvasser] = useState<Canvasser | null>(null);
+	const [selectedOption, setSelectedOption] = useState("all");
 	const [kpiStats, setKpiStats] = useState<
 		| {
 				label: string;
@@ -156,6 +157,7 @@ const Dashboard = () => {
 	};
 
 	const handleCanvasserChange = (e: SelectChangeEvent) => {
+		setSelectedOption(e.target.value);
 		const selectedCanvasser = canvassers.find(
 			(c) => c.id === e.target.value
 		);
@@ -165,7 +167,7 @@ const Dashboard = () => {
 	};
 
 	const canvasserOptions = [
-		{ label: "All Canvassers", value: "" },
+		{ label: "All Canvassers", value: "all" },
 		...canvassers.map((canvasser) => ({
 			label: `${canvasser.firstName} ${canvasser.lastName}`,
 			value: canvasser.id,
@@ -211,7 +213,7 @@ const Dashboard = () => {
 			<Stack direction={{ xs: "column", sm: "row" }} spacing={2} mb={4}>
 				<CustomSelect
 					name="selected-canvasser"
-					value={canvasser ? canvasser.id : ""}
+					value={selectedOption}
 					onChange={(e) => handleCanvasserChange(e)}
 					options={canvasserOptions}
 				/>
