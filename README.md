@@ -51,12 +51,14 @@ Map View+Canvassers in Desktop
 <img width="1546" alt="Map View" src="https://github.com/user-attachments/assets/4bcb1b0f-694b-4341-98ac-9416a8ef3458" />
 
 Map View+Canvassers Icon in Mobile
+
 <img width="293" alt="Map View Mobile" src="https://github.com/user-attachments/assets/90fd4954-dd0f-4321-8398-1d93dee506e5" />
 
 Dashboard in Desktop
 <img width="1543" alt="Dashboard View" src="https://github.com/user-attachments/assets/1fd6b3ea-4a39-47ce-b638-6e7f407bfbfb" />
 
 Dashboard in Mobile
+
 <img width="321" alt="Dashboard View Mobile" src="https://github.com/user-attachments/assets/826655e2-aff6-483c-bc14-4b1b3aabcad1" />
 
 
