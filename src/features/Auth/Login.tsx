@@ -1,5 +1,5 @@
 import { useForm, Controller } from "react-hook-form";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography, useTheme } from "@mui/material";
 import CustomInput from "../../components/Input";
 import CustomButton from "../../components/Button";
 import useAuth from "../../hooks/useAuth";
@@ -17,7 +17,7 @@ const LoginPage = () => {
 		handleSubmit,
 		formState: { isValid },
 	} = useForm<LoginFormInputs>();
-
+	const theme = useTheme();
 	const { loginUser, loading } = useAuth();
 
 	const onSubmit = async (data: LoginFormInputs) => {
@@ -32,7 +32,7 @@ const LoginPage = () => {
 				component="form"
 				onSubmit={handleSubmit(onSubmit)}
 				p={4}
-				bgcolor="white"
+				bgcolor={theme.palette.background.default}
 				borderRadius={3}
 				boxShadow={4}
 				width="100%"

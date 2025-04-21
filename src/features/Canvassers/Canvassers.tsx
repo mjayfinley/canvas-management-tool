@@ -69,10 +69,10 @@ const Canvassers = () => {
 							left: "25px",
 							color: "black",
 							zIndex: 1000,
-							border: "1px solid rgba(0, 0, 0, 0.2)", // faint outline
-							boxShadow: "0 1px 4px rgba(0, 0, 0, 0.1)", // subtle shadow
-							borderRadius: 1, // square shape (0 = sharp, 1 = slight rounding)
-							backgroundColor: "#fff", // optional: helps shadow show up better
+							border: "1px solid rgba(0, 0, 0, 0.2)",
+							boxShadow: "0 1px 4px rgba(0, 0, 0, 0.1)",
+							borderRadius: 1,
+							backgroundColor: "#fff",
 						}}
 					>
 						<PeopleAlt />

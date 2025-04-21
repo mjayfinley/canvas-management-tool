@@ -1,5 +1,14 @@
 import { ReactNode } from "react";
-import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
+import {
+	Box,
+	IconButton,
+	Typography,
+	useMediaQuery,
+	useTheme,
+} from "@mui/material";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
+import { useThemeContext } from "../../context/ThemeContext";
 
 interface AuthLayoutProps {
 	children: ReactNode;
@@ -7,6 +16,7 @@ interface AuthLayoutProps {
 
 const AuthLayout = ({ children }: AuthLayoutProps) => {
 	const theme = useTheme();
+	const { toggleTheme } = useThemeContext();
 	const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
 	return (
@@ -14,7 +24,11 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
 			display="flex"
 			flexDirection={isMobile ? "column" : "row"}
 			minHeight="100vh"
-			bgcolor={isMobile ? "primary.main" : "#f0f4f8"}
+			bgcolor={
+				isMobile
+					? theme.palette.primary.main
+					: theme.palette.background.default
+			}
 		>
 			<Box
 				display="flex"
@@ -23,9 +37,13 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
 				flex={1}
 				py={isMobile ? 2 : 0}
 				px={isMobile ? 2 : 4}
-				bgcolor={"primary.main"}
+				bgcolor={theme.palette.primary.main}
 			>
-				<Typography variant="h5" color={"white"} fontWeight="bold">
+				<Typography
+					variant="h5"
+					color={theme.palette.primary.contrastText}
+					fontWeight="bold"
+				>
 					CanvasPro
 				</Typography>
 			</Box>
@@ -40,6 +58,24 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
 			>
 				{children}
 			</Box>
+			<IconButton
+				color="inherit"
+				onClick={toggleTheme}
+				disableRipple
+				sx={{ mt: "auto", mb: "30px" }}
+			>
+				{theme.palette.mode === "dark" ? (
+					<>
+						<Brightness7Icon sx={{ mr: 1 }} />
+						Light
+					</>
+				) : (
+					<>
+						<Brightness4Icon sx={{ mr: 1 }} />
+						Dark
+					</>
+				)}
+			</IconButton>
 		</Box>
 	);
 };

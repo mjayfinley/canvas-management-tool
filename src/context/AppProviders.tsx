@@ -8,9 +8,9 @@ import { RegionProvider } from "./RegionContext";
 import { ToastProvider } from "./ToastContext";
 
 const AppProviders = ({ children }: { children: ReactNode }) => (
-	<AuthProvider>
-		<ToastProvider>
-			<ThemeProvider>
+	<ThemeProvider>
+		<AuthProvider>
+			<ToastProvider>
 				<CanvasserStatsProvider>
 					<CanvassersProvider>
 						<RegionProvider>
@@ -18,9 +18,9 @@ const AppProviders = ({ children }: { children: ReactNode }) => (
 						</RegionProvider>
 					</CanvassersProvider>
 				</CanvasserStatsProvider>
-			</ThemeProvider>
-		</ToastProvider>
-	</AuthProvider>
+			</ToastProvider>
+		</AuthProvider>
+	</ThemeProvider>
 );
 
 export default AppProviders;

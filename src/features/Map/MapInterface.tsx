@@ -1,5 +1,5 @@
 import { MouseEvent, useEffect, useRef, useState } from "react";
-import { Box, Popover, MenuItem } from "@mui/material";
+import { Box, Popover, MenuItem, useTheme, useMediaQuery } from "@mui/material";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { useRegionContext } from "../../context/RegionContext";
 import AssignCanvasserModal from "./AssignCanvasserModal";
@@ -12,6 +12,8 @@ import useUpdateMap from "./useUpdateMap";
 import Canvassers from "../Canvassers/Canvassers";
 
 const MapInterface = () => {
+	const theme = useTheme();
+	const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 	const mapRef = useRef<mapboxgl.Map | null>(null);
 	const mapContainerRef = useRef<HTMLDivElement | null>(null);
 	const drawRef = useRef<MapboxDraw | null>(null);
@@ -120,7 +122,11 @@ const MapInterface = () => {
 		<>
 			<Canvassers />
 			<Box
-				sx={{ height: "90vh", width: "100%", ml: "16px" }}
+				sx={{
+					height: "90vh",
+					width: "100%",
+					ml: !isMobile ? "16px" : "",
+				}}
 				ref={mapContainerRef}
 			/>
 			<Popover

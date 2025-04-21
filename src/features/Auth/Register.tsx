@@ -1,5 +1,5 @@
 import { useForm, Controller } from "react-hook-form";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography, useTheme } from "@mui/material";
 import CustomInput from "../../components/Input";
 import CustomButton from "../../components/Button";
 import { Link } from "react-router";
@@ -22,6 +22,7 @@ const RegisterPage = () => {
 	} = useForm<RegisterFormInputs>({
 		mode: "all",
 	});
+	const theme = useTheme();
 
 	const password = watch("password");
 
@@ -37,7 +38,7 @@ const RegisterPage = () => {
 				component="form"
 				onSubmit={handleSubmit(onSubmit)}
 				p={4}
-				bgcolor="white"
+				bgcolor={theme.palette.background.default}
 				borderRadius={3}
 				boxShadow={4}
 				width="100%"
