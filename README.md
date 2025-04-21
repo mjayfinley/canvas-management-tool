@@ -1,5 +1,19 @@
 # Canvas Management Tool
 
+Lightweight application for tracking and managing individuals canvassing a given region.
+
+## Features
+
+-   Add and remove your canvassers
+-   View list of existing canvassers
+-   Draw, edit, and delete regions on map
+-   Assign one or more canvassers to each region
+-   View region details w/ assigned canvassers
+-   Detailed dashboard to view canvassers stats
+-   Fully mobile and desktop responsive design w/ light and dark mode
+
+## Startup
+
 Once cloned, run the following commands to get up and running:
 
 ```
