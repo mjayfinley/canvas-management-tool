@@ -2,7 +2,6 @@ import { ReactNode } from "react";
 import { ThemeProvider } from "./ThemeContext";
 import { AssignmentProvider } from "./AssignmentContext";
 import { AuthProvider } from "./AuthContext";
-import { CanvasserProvider } from "./CanvasserContext";
 import { CanvassersProvider } from "./CanvassersContext";
 import { CanvasserStatsProvider } from "./CanvasserStatsContext";
 import { RegionProvider } from "./RegionContext";
@@ -15,11 +14,7 @@ const AppProviders = ({ children }: { children: ReactNode }) => (
 				<CanvasserStatsProvider>
 					<CanvassersProvider>
 						<RegionProvider>
-							<AssignmentProvider>
-								<CanvasserProvider>
-									{children}
-								</CanvasserProvider>
-							</AssignmentProvider>
+							<AssignmentProvider>{children}</AssignmentProvider>
 						</RegionProvider>
 					</CanvassersProvider>
 				</CanvasserStatsProvider>

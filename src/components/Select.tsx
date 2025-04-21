@@ -1,54 +1,60 @@
 import {
-	Autocomplete,
-	AutocompleteProps,
-	TextField,
-	Chip,
+	FormControl,
+	InputLabel,
+	Select,
+	MenuItem,
+	SelectChangeEvent,
+	FormHelperText,
 } from "@mui/material";
-import { SyntheticEvent } from "react";
 
-interface CustomAutocompleteProps<T>
-	extends Omit<
-		AutocompleteProps<T, true, true, false>,
-		"onChange" | "renderInput" | "renderTags"
-	> {
+interface Option {
 	label: string;
-	value: T[];
-	onChange: (value: T[]) => void;
-	getOptionLabel: (option: T) => string;
+	value: string;
 }
 
-const CustomSelect = <T,>({
+interface CustomSelectProps {
+	name: string;
+	label?: string;
+	value: string;
+	onChange: (event: SelectChangeEvent) => void;
+	options: Option[];
+	error?: string;
+	disabled?: boolean;
+}
+
+const CustomSelect = ({
+	name,
 	label,
 	value,
 	onChange,
 	options,
-	getOptionLabel,
-	sx,
-	...props
-}: CustomAutocompleteProps<T>) => {
+	error,
+	disabled = false,
+}: CustomSelectProps) => {
 	return (
-		<Autocomplete
-			multiple
-			disableCloseOnSelect
-			options={options}
-			value={value}
-			sx={sx}
-			getOptionLabel={getOptionLabel}
-			onChange={(_event: SyntheticEvent, newValue: T[]) =>
-				onChange(newValue)
-			}
-			renderValue={(selected, getTagProps) =>
-				selected.map((option, index) => (
-					<Chip
-						{...getTagProps({ index })}
-						key={index}
-						label={getOptionLabel(option)}
-					/>
-				))
-			}
-			renderInput={(params) => <TextField {...params} label={label} />}
-			{...props}
-		/>
+		<FormControl
+			fullWidth
+			margin="normal"
+			error={!!error}
+			disabled={disabled}
+		>
+			{label && <InputLabel id={`${name}-label`}>{label}</InputLabel>}
+			<Select
+				labelId={`${name}-label`}
+				id={name}
+				name={name}
+				value={value}
+				label={label}
+				onChange={onChange}
+			>
+				{options.map((option) => (
+					<MenuItem key={option.value} value={option.value}>
+						{option.label}
+					</MenuItem>
+				))}
+			</Select>
+			{error && <FormHelperText>{error}</FormHelperText>}
+		</FormControl>
 	);
 };
 

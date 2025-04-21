@@ -2,7 +2,7 @@ import { useAssignmentContext } from "../../context/AssignmentContext";
 import { useCanvassersContext } from "../../context/CanvassersContext";
 import { useState, useEffect } from "react";
 import CustomModal from "../../components/Modal";
-import CustomSelect from "../../components/Select";
+import CustomAutoComplete from "../../components/AutoComplete";
 
 interface Props {
 	open: boolean;
@@ -44,7 +44,7 @@ const AssignCanvasserModal = ({ open, onClose, regionId }: Props) => {
 			onClose={onClose}
 			title="Assign Canvassers"
 			content={
-				<CustomSelect
+				<CustomAutoComplete
 					label="Canvassers"
 					options={canvassers}
 					sx={{ pt: 1 }}

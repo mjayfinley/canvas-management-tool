@@ -9,6 +9,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 
 import useMapSetup from "./useMapSetup";
 import useUpdateMap from "./useUpdateMap";
+import Canvassers from "../Canvassers/Canvassers";
 
 const MapInterface = () => {
 	const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -117,7 +118,11 @@ const MapInterface = () => {
 
 	return (
 		<>
-			<Box sx={{ height: "90vh", width: "100%" }} ref={mapContainerRef} />
+			<Canvassers />
+			<Box
+				sx={{ height: "90vh", width: "100%", ml: "16px" }}
+				ref={mapContainerRef}
+			/>
 			<Popover
 				open={Boolean(anchorEl)}
 				anchorReference="anchorPosition"

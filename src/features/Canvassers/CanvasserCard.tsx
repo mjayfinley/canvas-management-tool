@@ -3,9 +3,8 @@ import CustomCard from "../../components/Card";
 import { IconButton } from "@mui/material";
 import { useAssignmentContext } from "../../context/AssignmentContext";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+
 import { Canvasser } from "../../utils/types";
-import { useCanvasserContext } from "../../context/CanvasserContext";
 
 interface CanvasserCardProps {
 	canvasser: Canvasser;
@@ -13,14 +12,9 @@ interface CanvasserCardProps {
 	setOpen: () => void;
 }
 
-const CanvasserCard = ({
-	canvasser,
-	onDelete,
-	setOpen,
-}: CanvasserCardProps) => {
+const CanvasserCard = ({ canvasser, onDelete }: CanvasserCardProps) => {
 	const { assignments } = useAssignmentContext();
-	const { setSelectedCanvasser } = useCanvasserContext();
-	const navigate = useNavigate();
+
 	const [numberOfAssignments, setNumberOfAssignments] = useState(0);
 
 	useEffect(() => {
@@ -30,18 +24,11 @@ const CanvasserCard = ({
 		setNumberOfAssignments(assignedRegions.length);
 	}, [assignments]);
 
-	const handleSelectCanvasser = () => {
-		setSelectedCanvasser(canvasser);
-		setOpen();
-		navigate("/dashboard");
-	};
-
 	return (
 		<CustomCard
 			title={`${canvasser.firstName} ${canvasser.lastName}`}
 			description={canvasser.email}
 			content={`Regions: ${numberOfAssignments}`}
-			onClick={handleSelectCanvasser}
 			sx={{ "&:hover": { cursor: "pointer" } }}
 			actionElement={
 				<IconButton
